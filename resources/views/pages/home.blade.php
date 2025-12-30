@@ -69,7 +69,7 @@
         </div>
         
         <!-- Compte à rebours -->
-        <div class="countdown-container mt-5 mb-30" data-aos="fade-up" data-aos-delay="1000">
+        <div class="countdown-container mt-5 mb-30" style="background: none" data-aos="fade-up" data-aos-delay="1000">
             <div class="countdown" id="countdown">
                 <div class="countdown-item">
                     <span class="countdown-number" id="days">00</span>
@@ -528,5 +528,18 @@
             particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
         });
     });
+
+    // Correction du scroll pour le bouton Découvrir
+document.querySelector('a[href="#content"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    const target = document.querySelector('#content');
+    const headerHeight = window.innerWidth <= 767 ? 150 : 100; // Plus d'espace sur mobile
+    
+    window.scrollTo({
+        top: target.offsetTop - headerHeight,
+        behavior: 'smooth'
+    });
+});
 </script>
 @endsection
