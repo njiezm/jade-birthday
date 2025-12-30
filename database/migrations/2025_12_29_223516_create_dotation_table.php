@@ -6,27 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('dotation', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->integer('amount');
-    $table->text('message')->nullable();
-    $table->string('email')->nullable();
-    $table->timestamps();
-});
-
+        Schema::create('dotations', function (Blueprint $table) {
+            $table->id();
+            $table->string('reference')->unique();
+            $table->string('name');
+            $table->string('email');
+            $table->decimal('amount', 8, 2);
+            $table->text('message')->nullable();
+            $table->string('type'); // contribution, bottle, music, photoshoot
+            $table->string('status')->default('pending'); // pending, paid, cancelled
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('dotation');
+        Schema::dropIfExists('dotations');
     }
 };
