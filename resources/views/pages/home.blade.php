@@ -25,7 +25,7 @@
 <header class="festival-header">
     <div class="header-img-container">
         <div class="header-overlay"></div>
-        <div id="particles-js"></div>
+        <!--div id="particles-js"></!--div-->
     </div>
     
     <div class="header-content container text-center margin-bottom-50">
@@ -69,7 +69,7 @@
         </div>
         
         <!-- Compte à rebours -->
-        <div class="countdown-container mt-5 mb-30" style="background: none" data-aos="fade-up" data-aos-delay="1000">
+        <div class="countdown-container mt-5 mb-30" style="background: transparent" data-aos="fade-up" data-aos-delay="1000">
             <div class="countdown" id="countdown">
                 <div class="countdown-item">
                     <span class="countdown-number" id="days">00</span>
