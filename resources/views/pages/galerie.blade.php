@@ -82,34 +82,32 @@
         <h3 class="text-center mb-4">Moments du Festival</h3>
         
         <div class="gallery-grid" id="gallery-grid">
-            @forelse
-            <div class="empty-gallery text-center py-5">
-                <i class="fas fa-images fa-4x mb-3"></i>
-                <h4>Aucune photo pour le moment</h4>
-                <p>Soyez le premier à partager un moment du festival!</p>
-            </div>
-            @empty
-            
-            @foreach($images as $galleryImage)
-            <div class="gallery-item">
-                <div class="gallery-img-container">
-                    <img src="{{ Storage::url($galleryImage->image_path) }}" alt="Festival moment" class="gallery-img">
-                    <div class="gallery-overlay">
-                        <div class="gallery-info">
-                            <h5>{{ $galleryImage->author_name ?? 'Anonyme' }}</h5>
-                            <p class="caption">{{ $galleryImage->caption ?? '' }}</p>
-                            <p>{{ $galleryImage->created_at->format('d/m/Y H:i') }}</p>
-                        </div>
-                        <div class="gallery-actions">
-                            <button class="btn btn-sm btn-outline-light share-btn" data-image="{{ Storage::url($galleryImage->image_path) }}" data-caption="{{ $galleryImage->caption ?? 'Découvrez ce moment incroyable du festival!' }}">
-                                <i class="fas fa-share-alt"></i>
-                            </button>
-                        </div>
-                    </div>
+    @forelse($images as $galleryImage)
+    <div class="gallery-item">
+        <div class="gallery-img-container">
+            <img src="{{ Storage::url($galleryImage->image_path) }}" alt="Festival moment" class="gallery-img">
+            <div class="gallery-overlay">
+                <div class="gallery-info">
+                    <h5>{{ $galleryImage->author_name ?? 'Anonyme' }}</h5>
+                    <p class="caption">{{ $galleryImage->caption ?? '' }}</p>
+                    <p>{{ $galleryImage->created_at->format('d/m/Y H:i') }}</p>
+                </div>
+                <div class="gallery-actions">
+                    <button class="btn btn-sm btn-outline-light share-btn" data-image="{{ Storage::url($galleryImage->image_path) }}" data-caption="{{ $galleryImage->caption ?? 'Découvrez ce moment incroyable du festival!' }}">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
                 </div>
             </div>
-            @endforeach
         </div>
+    </div>
+    @empty
+    <div class="empty-gallery text-center py-5">
+        <i class="fas fa-images fa-4x mb-3"></i>
+        <h4>Aucune photo pour le moment</h4>
+        <p>Soyez le premier à partager un moment du festival!</p>
+    </div>
+    @endforelse
+</div>
     </div>
 </div>
 
