@@ -29,8 +29,12 @@
     </div>
     
     <div class="header-content container text-center margin-bottom-50">
-        <div class="header-badge" data-aos="fade-down" data-aos-delay="200">
-            <p class="mb-0 text-uppercase fw-bold tracking-widest">Jade Présente</p>
+        <br>
+        <br>
+        
+
+        <div class="header-badge mt-5" data-aos="fade-down" data-aos-delay="200">
+            <p class="mb-0 text-uppercase fw-bold tracking-widest ">Jade Présente</p>
         </div>
         
         <!-- Conteneur pour le titre avec les images de chaque côté -->
