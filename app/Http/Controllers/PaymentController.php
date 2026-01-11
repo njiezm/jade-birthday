@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Ticket;
-use App\Services\PayPalService;
-use App\Services\StripeService;
+use App\Services\SumUpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -15,13 +14,11 @@ use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
-    private $paypalService;
-    private $stripeService;
+    private $sumupService;
     
-    public function __construct(PayPalService $paypalService, StripeService $stripeService)
+    public function __construct(SumUpService $sumupService)
     {
-        $this->paypalService = $paypalService;
-        $this->stripeService = $stripeService;
+        $this->sumupService = $sumupService;
     }
     
     public function store(Request $request)
@@ -32,11 +29,11 @@ class PaymentController extends Controller
                 'tickets' => 'required|array|min:1',
                 'tickets.*.firstname' => 'required|string|max:255',
                 'tickets.*.lastname' => 'required|string|max:255',
-                'payment_method' => 'required|in:paypal,stripe',
+                'payment_method' => 'required|in:sumup,cash',
             ]);
             
-            // Calculer le montant total - MODIFIÉ À 35€
-            $amount = count($request->tickets) * 35; // 35€ par billet
+            // Calculer le montant total - MODIFIÉ À 30€
+            $amount = count($request->tickets) * 30; // 30€ par billet
             
             // Créer la commande avec le statut 'pending'
             $order = Order::create([
@@ -58,10 +55,10 @@ class PaymentController extends Controller
             }
             
             // Traiter selon la méthode de paiement
-            if ($request->payment_method === 'paypal') {
-                return $this->processPayPalPayment($order, $amount);
+            if ($request->payment_method === 'sumup') {
+                return $this->processSumUpPayment($order, $amount, $request->email);
             } else {
-                return $this->processStripePayment($order, $amount, $request->email);
+                return $this->processCashPayment($order, $amount);
             }
             
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -78,76 +75,88 @@ class PaymentController extends Controller
         }
     }
     
-    private function processPayPalPayment($order, $amount)
+    private function processSumUpPayment($order, $amount, $email)
     {
         try {
-            $paypalOrder = $this->paypalService->createOrder(
-                $amount,
-                route('payment.success', ['reference' => $order->reference]),
-                route('payment.cancel', ['reference' => $order->reference])
-            );
-            
-            // Stocker l'ID de la commande PayPal
-            $order->update(['paypal_order_id' => $paypalOrder->result->id]);
-            
-            // Retourner l'ID de la commande PayPal pour la redirection
-            return response()->json([
-                'success' => true,
-                'orderID' => $paypalOrder->result->id
-            ]);
-            
-        } catch (\Exception $e) {
-            Log::error('PayPal error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de la création de la commande PayPal: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-    
-    private function processStripePayment($order, $amount, $email)
-    {
-        try {
-            $session = $this->stripeService->createCheckoutSession(
+            // Créer une session de paiement SumUp
+            $checkout = $this->sumupService->createCheckout(
                 $amount,
                 $email,
-                route('stripe.success', ['reference' => $order->reference]),
-                route('stripe.cancel', ['reference' => $order->reference]),
-                ['order_reference' => $order->reference]
+                route('sumup.success', ['reference' => $order->reference]),
+                route('sumup.cancel', ['reference' => $order->reference])
             );
             
-            // Stocker l'ID de la session Stripe
-            $order->update(['stripe_session_id' => $session->id]);
+            // Stocker l'ID de la session SumUp
+            $order->update(['sumup_checkout_id' => $checkout->id]);
             
-            // Retourner l'URL de redirection de Stripe
+            // Retourner les informations de la session SumUp
             return response()->json([
                 'success' => true,
-                'redirect_url' => $session->url
+                'checkout_id' => $checkout->id,
+                'amount' => $amount,
+                'reference' => $order->reference
             ]);
             
         } catch (\Exception $e) {
-            Log::error('Stripe error: ' . $e->getMessage());
+            Log::error('SumUp error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de la création de la session Stripe: ' . $e->getMessage()
+                'message' => 'Erreur lors de la création de la session SumUp: ' . $e->getMessage()
             ], 500);
         }
     }
     
-    public function success(Request $request, $reference)
+    private function processCashPayment($order, $amount)
+    {
+        try {
+            // Pour le paiement en espèces, nous considérons que la commande est confirmée
+            // mais en attente de paiement
+            $order->update(['status' => 'cash_pending']);
+            
+            // Générer les QR codes pour les billets
+            foreach ($order->tickets as $ticket) {
+                $qrCodePath = 'qrcodes/' . $order->reference . '_' . $ticket->id . '.svg';
+                $qrCodeContent = route('ticket.validate', ['reference' => $order->reference, 'id' => $ticket->id]);
+                
+                QrCode::format('svg')
+                    ->size(200)
+                    ->errorCorrection('H')
+                    ->generate($qrCodeContent, public_path($qrCodePath));
+                
+                $ticket->update(['qr_code_path' => $qrCodePath]);
+            }
+            
+            // Envoyer les emails de confirmation
+            Mail::to($order->email)->send(new TicketsPurchased($order));
+            Mail::to(config('mail.admin_address'))->send(new TicketsPurchased($order, true));
+            
+            return response()->json([
+                'success' => true,
+                'reference' => $order->reference
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Cash payment error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du traitement du paiement en espèces: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function sumupSuccess(Request $request, $reference)
     {
         try {
             $order = Order::where('reference', $reference)->firstOrFail();
             
-            // Vérifier si nous avons un ID de commande PayPal
-            if (!$order->paypal_order_id) {
+            if (!$order->sumup_checkout_id) {
                 return redirect()->route('billetterie')->with('error', 'Commande invalide.');
             }
             
-            // Capturer le paiement PayPal
-            $paypalOrder = $this->paypalService->captureOrder($order->paypal_order_id);
+            // Vérifier le statut du paiement avec SumUp
+            $checkout = $this->sumupService->getCheckout($order->sumup_checkout_id);
             
-            if ($paypalOrder->result->status === 'COMPLETED') {
+            if ($checkout->status === 'PAID') {
                 // Mettre à jour le statut de la commande
                 $order->update(['status' => 'paid']);
                 
@@ -166,6 +175,7 @@ class PaymentController extends Controller
                 
                 // Envoyer les emails de confirmation
                 Mail::to($order->email)->send(new TicketsPurchased($order));
+                Mail::to(config('mail.admin_address'))->send(new TicketsPurchased($order, true));
                 
                 return redirect()->route('paiement.success', ['reference' => $order->reference])
                     ->with('success', 'Paiement effectué avec succès! Vos billets ont été envoyés par email.');
@@ -174,65 +184,12 @@ class PaymentController extends Controller
             }
             
         } catch (\Exception $e) {
-            Log::error('PayPal success error: ' . $e->getMessage());
+            Log::error('SumUp success error: ' . $e->getMessage());
             return redirect()->route('billetterie')->with('error', 'Erreur lors de la validation du paiement: ' . $e->getMessage());
         }
     }
     
-    public function stripeSuccess(Request $request, $reference)
-    {
-        try {
-            $order = Order::where('reference', $reference)->firstOrFail();
-            
-            if (!$order->stripe_session_id) {
-                return redirect()->route('billetterie')->with('error', 'Commande invalide.');
-            }
-            
-            $session = $this->stripeService->retrieveSession($order->stripe_session_id);
-            
-            if ($session->payment_status === 'paid') {
-                // Mettre à jour le statut de la commande
-                $order->update(['status' => 'paid']);
-                
-                // Générer les QR codes pour les billets
-                foreach ($order->tickets as $ticket) {
-                    $qrCodePath = 'qrcodes/' . $order->reference . '_' . $ticket->id . '.svg';
-                    $qrCodeContent = route('ticket.validate', ['reference' => $order->reference, 'id' => $ticket->id]);
-                    
-                    QrCode::format('svg')
-                        ->size(200)
-                        ->errorCorrection('H')
-                        ->generate($qrCodeContent, public_path($qrCodePath));
-                    
-                    $ticket->update(['qr_code_path' => $qrCodePath]);
-                }
-                
-                // Envoyer les emails de confirmation
-                Mail::to($order->email)->send(new TicketsPurchased($order));
-                
-                return redirect()->route('paiement.success', ['reference' => $order->reference])
-                    ->with('success', 'Paiement effectué avec succès! Vos billets ont été envoyés par email.');
-            } else {
-                return redirect()->route('billetterie')->with('error', 'Le paiement n\'a pas pu être validé.');
-            }
-            
-        } catch (\Exception $e) {
-            Log::error('Stripe success error: ' . $e->getMessage());
-            return redirect()->route('billetterie')->with('error', 'Erreur lors de la validation du paiement: ' . $e->getMessage());
-        }
-    }
-    
-    public function stripeCancel($reference)
-    {
-        $order = Order::where('reference', $reference)->firstOrFail();
-        
-        // Marquer la commande comme annulée
-        $order->update(['status' => 'cancelled']);
-        
-        return redirect()->route('billetterie')->with('error', 'Le paiement a été annulé.');
-    }
-    
-    public function cancel($reference)
+    public function sumupCancel($reference)
     {
         $order = Order::where('reference', $reference)->firstOrFail();
         

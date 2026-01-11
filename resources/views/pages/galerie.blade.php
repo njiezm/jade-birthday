@@ -7,6 +7,8 @@
     <x-floating-asset class="asset-coupe-1" svg="coupe.png"/>
     <x-floating-asset class="asset-smirnoff-1" svg="smirnoff.png"/>
     <x-floating-asset class="asset-martini-1" svg="martini.png"/>
+    <x-floating-asset class="asset-camera-1" svg="camera.png"/>
+    <x-floating-asset class="asset-champagne-1" svg="champagne.png"/>
 @endsection
 
 @section('content')
@@ -19,7 +21,7 @@
     <div class="upload-section mb-5">
         <div class="upload-container">
             <h3 class="text-center mb-4">Ajoutez votre photo</h3>
-            <form action="{{ route('galerie') }}" method="POST" enctype="multipart/form-data" id="upload-form">
+            <form action="{{ route('galerie.store') }}" method="POST" enctype="multipart/form-data" id="upload-form">
                 @csrf
                 <div class="upload-options mb-4 text-center">
                     <button type="button" class="btn btn-outline-light mx-2" id="camera-btn">
@@ -78,36 +80,51 @@
     </div>
     @endif
     
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+    
     <div class="gallery-section">
         <h3 class="text-center mb-4">Moments du Festival</h3>
         
         <div class="gallery-grid" id="gallery-grid">
-    @forelse($images as $galleryImage)
-    <div class="gallery-item">
-        <div class="gallery-img-container">
-            <img src="{{ Storage::url($galleryImage->image_path) }}" alt="Festival moment" class="gallery-img">
-            <div class="gallery-overlay">
-                <div class="gallery-info">
-                    <h5>{{ $galleryImage->author_name ?? 'Anonyme' }}</h5>
-                    <p class="caption">{{ $galleryImage->caption ?? '' }}</p>
-                    <p>{{ $galleryImage->created_at->format('d/m/Y H:i') }}</p>
-                </div>
-                <div class="gallery-actions">
-                    <button class="btn btn-sm btn-outline-light share-btn" data-image="{{ Storage::url($galleryImage->image_path) }}" data-caption="{{ $galleryImage->caption ?? 'Découvrez ce moment incroyable du festival!' }}">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
+            @forelse($images as $galleryImage)
+            <div class="gallery-item" data-id="{{ $galleryImage->id }}">
+                <div class="gallery-img-container">
+                    <img src="{{ Storage::url($galleryImage->image_path) }}" alt="Festival moment" class="gallery-img">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>{{ $galleryImage->author_name ?? 'Anonyme' }}</h5>
+                            <p class="caption">{{ $galleryImage->caption ?? '' }}</p>
+                            <p>{{ $galleryImage->created_at->format('d/m/Y H:i') }}</p>
+                        </div>
+                        <div class="gallery-actions">
+                            <button class="btn btn-sm btn-outline-light share-btn" 
+                                    data-image="{{ Storage::url($galleryImage->image_path) }}" 
+                                    data-caption="{{ $galleryImage->caption ?? 'Découvrez ce moment incroyable du festival!' }}"
+                                    data-id="{{ $galleryImage->id }}">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-light download-btn" 
+                                    data-image="{{ Storage::url($galleryImage->image_path) }}"
+                                    data-filename="jade-birthday-{{ $galleryImage->id }}.jpg">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            @empty
+            <div class="empty-gallery text-center py-5">
+                <i class="fas fa-images fa-4x mb-3"></i>
+                <h4>Aucune photo pour le moment</h4>
+                <p>Soyez le premier à partager un moment du festival!</p>
+            </div>
+            @endforelse
         </div>
-    </div>
-    @empty
-    <div class="empty-gallery text-center py-5">
-        <i class="fas fa-images fa-4x mb-3"></i>
-        <h4>Aucune photo pour le moment</h4>
-        <p>Soyez le premier à partager un moment du festival!</p>
-    </div>
-    @endforelse
-</div>
     </div>
 </div>
 
@@ -125,17 +142,20 @@
             <div class="modal-footer border-0">
                 <p class="text-white" id="modal-caption"></p>
                 <div class="share-options d-flex justify-content-center gap-2">
-                    <button class="btn btn-outline-light btn-sm share-instagram">
+                    <button class="btn btn-outline-light btn-sm share-instagram" id="modal-share-instagram">
                         <i class="fab fa-instagram"></i>
                     </button>
-                    <button class="btn btn-outline-light btn-sm share-facebook">
+                    <button class="btn btn-outline-light btn-sm share-facebook" id="modal-share-facebook">
                         <i class="fab fa-facebook-f"></i>
                     </button>
-                    <button class="btn btn-outline-light btn-sm share-twitter">
+                    <button class="btn btn-outline-light btn-sm share-twitter" id="modal-share-twitter">
                         <i class="fab fa-twitter"></i>
                     </button>
-                    <button class="btn btn-outline-light btn-sm share-snapchat">
+                    <button class="btn btn-outline-light btn-sm share-snapchat" id="modal-share-snapchat">
                         <i class="fab fa-snapchat-ghost"></i>
+                    </button>
+                    <button class="btn btn-outline-light btn-sm download-image" id="modal-download-image">
+                        <i class="fas fa-download"></i>
                     </button>
                 </div>
             </div>
@@ -152,6 +172,9 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="preview-image-container mb-3">
+                    <img id="share-preview-image" src="" alt="Preview" class="img-fluid rounded">
+                </div>
                 <div class="social-share text-center">
                     <button class="btn btn-outline-light btn-lg m-2 share-instagram" id="share-instagram">
                         <i class="fab fa-instagram me-2"></i> Instagram
@@ -165,6 +188,9 @@
                     <button class="btn btn-outline-light btn-lg m-2 share-snapchat" id="share-snapchat">
                         <i class="fab fa-snapchat-ghost"></i> Snapchat
                     </button>
+                    <button class="btn btn-outline-light btn-lg m-2 share-whatsapp" id="share-whatsapp">
+                        <i class="fab fa-whatsapp me-2"></i> WhatsApp
+                    </button>
                 </div>
                 <div class="mt-3">
                     <label for="custom-caption" class="form-label text-white">Personnalisez votre message:</label>
@@ -175,9 +201,22 @@
     </div>
 </div>
 
+<!-- Toast pour les notifications -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="notification-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-message">
+            Message
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Upload form
+        // Variables globales
         const uploadArea = document.getElementById('upload-area');
         const browseBtn = document.getElementById('browse-btn');
         const cameraBtn = document.getElementById('camera-btn');
@@ -193,6 +232,29 @@
         const uploadForm = document.getElementById('upload-form');
         let stream = null;
         let currentImageType = null; // 'file' ou 'camera'
+        let currentImageData = null; // Pour stocker les données de l'image
+        
+        // Fonction pour afficher une notification
+        function showNotification(message, type = 'success') {
+            const toastEl = document.getElementById('notification-toast');
+            const toastBody = document.getElementById('toast-message');
+            const toastHeader = toastEl.querySelector('.toast-header');
+            
+            toastBody.textContent = message;
+            
+            // Adapter le style selon le type
+            toastEl.className = 'toast';
+            if (type === 'error') {
+                toastEl.classList.add('bg-danger', 'text-white');
+                toastHeader.classList.add('bg-danger', 'text-white');
+            } else {
+                toastEl.classList.add('bg-success', 'text-white');
+                toastHeader.classList.add('bg-success', 'text-white');
+            }
+            
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
         
         // Gestion des boutons d'upload
         browseBtn.addEventListener('click', function() {
@@ -221,7 +283,7 @@
                         width: { ideal: 1280 },
                         height: { ideal: 720 }
                     } 
-                );
+                });
                 
                 cameraPreview.srcObject = stream;
                 cameraPreview.style.display = 'block';
@@ -253,7 +315,7 @@
                 submitBtn.disabled = false;
             } catch (err) {
                 console.error("Erreur d'accès à la caméra:", err);
-                alert("Impossible d'accéder à la caméra. Veuillez vérifier les permissions.");
+                showNotification("Impossible d'accéder à la caméra. Veuillez vérifier les permissions.", "error");
             }
         }
         
@@ -269,8 +331,11 @@
                 stream.getTracks().forEach(track => track.stop());
             }
             
+            // Stocker les données de l'image
+            currentImageData = cameraCanvas.toDataURL('image/jpeg');
+            
             // Afficher la photo
-            imagePreview.src = cameraCanvas.toDataURL('image/jpeg');
+            imagePreview.src = currentImageData;
             previewContainer.style.display = 'block';
             retakePhoto.style.display = 'inline-block';
             
@@ -310,12 +375,12 @@
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: newFacingMode }
-                );
+                });
                 
                 cameraPreview.srcObject = stream;
             } catch (err) {
                 console.error("Erreur lors du changement de caméra:", err);
-                alert("Impossible de changer de caméra.");
+                showNotification("Impossible de changer de caméra.", "error");
             }
         }
         
@@ -350,14 +415,15 @@
             if (file.type.startsWith('image/')) {
                 // Vérifier la taille du fichier (limite à 5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('L\'image est trop grande. Veuillez choisir une image de moins de 5MB.');
+                    showNotification('L\'image est trop grande. Veuillez choisir une image de moins de 5MB.', "error");
                     return;
                 }
                 
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
+                    currentImageData = e.target.result;
+                    imagePreview.src = currentImageData;
                     previewContainer.style.display = 'block';
                     uploadArea.querySelector('.upload-content').style.display = 'none';
                     submitBtn.disabled = false;
@@ -365,7 +431,7 @@
                 
                 reader.readAsDataURL(file);
             } else {
-                alert('Veuillez sélectionner un fichier image valide.');
+                showNotification('Veuillez sélectionner un fichier image valide.', "error");
             }
         }
         
@@ -387,6 +453,7 @@
             previewContainer.style.display = 'none';
             cameraPreview.style.display = 'none';
             retakePhoto.style.display = 'none';
+            currentImageData = null;
             
             // Recréer le contenu original de l'upload-area
             uploadArea.innerHTML = `
@@ -423,6 +490,72 @@
             }
         }
         
+        // Soumission du formulaire
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Afficher un indicateur de chargement
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
+            
+            // Créer un FormData pour l'envoi
+            const formData = new FormData(uploadForm);
+            
+            // Si nous avons des données d'image (pour la caméra)
+            if (currentImageData && currentImageType === 'camera') {
+                // Convertir les données de l'image en blob
+                fetch(currentImageData)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
+                        formData.set('image', file);
+                        
+                        // Envoyer le formulaire
+                        sendFormData(formData);
+                    });
+            } else {
+                // Envoyer le formulaire directement
+                sendFormData(formData);
+            }
+        });
+        
+        // Fonction pour envoyer les données du formulaire
+        function sendFormData(formData) {
+            fetch(uploadForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur lors de l\'envoi de l\'image');
+                }
+                return response.text();
+            })
+            .then(html => {
+                // Afficher un message de succès
+                showNotification('Votre photo a été partagée avec succès!');
+                
+                // Réinitialiser le formulaire
+                resetUploadForm();
+                
+                // Recharger la page après un court délai pour voir la nouvelle image
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showNotification('Une erreur est survenue lors du téléchargement de votre photo.', "error");
+                
+                // Réinitialiser le bouton
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Partager';
+            });
+        }
+        
         // Gallery modal
         const modal = new bootstrap.Modal(document.getElementById('imageModal'));
         const modalImage = document.getElementById('modal-image');
@@ -435,6 +568,14 @@
                 modalImage.src = this.src;
                 modalTitle.textContent = this.alt || 'Moment du festival';
                 modalCaption.textContent = this.parentElement.querySelector('.caption')?.textContent || '';
+                
+                // Mettre à jour les boutons de partage
+                document.getElementById('modal-share-instagram').setAttribute('data-image', this.src);
+                document.getElementById('modal-share-facebook').setAttribute('data-image', this.src);
+                document.getElementById('modal-share-twitter').setAttribute('data-image', this.src);
+                document.getElementById('modal-share-snapchat').setAttribute('data-image', this.src);
+                document.getElementById('modal-download-image').setAttribute('data-image', this.src);
+                
                 modal.show();
             });
         });
@@ -443,11 +584,15 @@
         const shareBtns = document.querySelectorAll('.share-btn');
         const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
         const customCaption = document.getElementById('custom-caption');
+        const sharePreviewImage = document.getElementById('share-preview-image');
         
         shareBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const imageUrl = this.getAttribute('data-image');
                 const defaultCaption = this.getAttribute('data-caption');
+                
+                // Afficher l'aperçu de l'image
+                sharePreviewImage.src = imageUrl;
                 
                 // Pré-remplir le champ de légende
                 customCaption.value = defaultCaption;
@@ -457,6 +602,7 @@
                 document.getElementById('share-facebook').setAttribute('data-image', imageUrl);
                 document.getElementById('share-twitter').setAttribute('data-image', imageUrl);
                 document.getElementById('share-snapchat').setAttribute('data-image', imageUrl);
+                document.getElementById('share-whatsapp').setAttribute('data-image', imageUrl);
                 
                 shareModal.show();
             });
@@ -479,69 +625,83 @@
             shareToSocial('snapchat', this.getAttribute('data-image'), customCaption.value);
         });
         
+        document.getElementById('share-whatsapp').addEventListener('click', function() {
+            shareToSocial('whatsapp', this.getAttribute('data-image'), customCaption.value);
+        });
+        
         // Boutons de partage dans le modal de l'image
-        document.querySelectorAll('.share-instagram').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const imageUrl = document.getElementById('modal-image').src;
-                const caption = document.getElementById('modal-caption').textContent;
-                shareToSocial('instagram', imageUrl, caption);
-            });
+        document.getElementById('modal-share-instagram').addEventListener('click', function() {
+            const imageUrl = document.getElementById('modal-image').src;
+            const caption = document.getElementById('modal-caption').textContent;
+            shareToSocial('instagram', imageUrl, caption);
         });
         
-        document.querySelectorAll('.share-facebook').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const imageUrl = document.getElementById('modal-image').src;
-                const caption = document.getElementById('modal-caption').textContent;
-                shareToSocial('facebook', imageUrl, caption);
-            });
+        document.getElementById('modal-share-facebook').addEventListener('click', function() {
+            const imageUrl = document.getElementById('modal-image').src;
+            const caption = document.getElementById('modal-caption').textContent;
+            shareToSocial('facebook', imageUrl, caption);
         });
         
-        document.querySelectorAll('.share-twitter').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const imageUrl = document.getElementById('modal-image').src;
-                const caption = document.getElementById('modal-caption').textContent;
-                shareToSocial('twitter', imageUrl, caption);
-            });
+        document.getElementById('modal-share-twitter').addEventListener('click', function() {
+            const imageUrl = document.getElementById('modal-image').src;
+            const caption = document.getElementById('modal-caption').textContent;
+            shareToSocial('twitter', imageUrl, caption);
         });
         
-        document.querySelectorAll('.share-snapchat').forEach(btn => {
+        document.getElementById('modal-share-snapchat').addEventListener('click', function() {
+            const imageUrl = document.getElementById('modal-image').src;
+            const caption = document.getElementById('modal-caption').textContent;
+            shareToSocial('snapchat', imageUrl, caption);
+        });
+        
+        document.getElementById('modal-download-image').addEventListener('click', function() {
+            const imageUrl = document.getElementById('modal-image').src;
+            downloadImage(imageUrl, 'jade-birthday.jpg');
+        });
+        
+        // Boutons de téléchargement
+        document.querySelectorAll('.download-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const imageUrl = document.getElementById('modal-image').src;
-                const caption = document.getElementById('modal-caption').textContent;
-                shareToSocial('snapchat', imageUrl, caption);
+                const imageUrl = this.getAttribute('data-image');
+                const filename = this.getAttribute('data-filename');
+                downloadImage(imageUrl, filename);
             });
         });
         
         // Fonction pour partager sur les réseaux sociaux
         function shareToSocial(platform, imageUrl, caption) {
             const encodedUrl = encodeURIComponent(window.location.href);
-            const encodedCaption = encodeURIComponent(caption);
+            const encodedCaption = encodeURIComponent(caption + ' #JadeBirthday23 #BelliniFest');
             
             let shareUrl = '';
             
             switch(platform) {
                 case 'instagram':
-                    // Instagram ne supporte pas le partage direct via URL
-                    shareUrl = 'https://www.instagram.com/';
-                    alert('Instagram sera ouvert dans un nouvel onglet. Vous devrez télécharger l\'image et la partager manuellement.');
+                    // Pour Instagram, nous allons télécharger l'image et afficher des instructions
+                    downloadImage(imageUrl, 'jade-birthday-instagram.jpg');
+                    showNotification('Image téléchargée! Vous pouvez maintenant la partager sur Instagram.', 'success');
                     break;
                     
                 case 'facebook':
                     shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedCaption}`;
+                    window.open(shareUrl, '_blank');
                     break;
                     
                 case 'twitter':
                     shareUrl = `https://twitter.com/intent/tweet?text=${encodedCaption}&url=${encodedUrl}`;
+                    window.open(shareUrl, '_blank');
                     break;
                     
                 case 'snapchat':
-                    shareUrl = 'https://www.snapchat.com/';
-                    alert('Snapchat sera ouvert dans un nouvel onglet. Vous devrez télécharger l\'image et la partager manuellement.');
+                    // Pour Snapchat, nous allons télécharger l'image et afficher des instructions
+                    downloadImage(imageUrl, 'jade-birthday-snapchat.jpg');
+                    showNotification('Image téléchargée! Vous pouvez maintenant la partager sur Snapchat.', 'success');
                     break;
-            }
-            
-            if (shareUrl) {
-                window.open(shareUrl, '_blank');
+                    
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${encodedCaption} ${encodedUrl}`;
+                    window.open(shareUrl, '_blank');
+                    break;
             }
             
             // Fermer le modal de partage s'il est ouvert
@@ -558,11 +718,32 @@
                 modalInstance.hide();
             }
         }
+        
+        // Fonction pour télécharger une image
+        function downloadImage(imageUrl, filename) {
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(error => {
+                    console.error('Erreur lors du téléchargement de l\'image:', error);
+                    showNotification('Erreur lors du téléchargement de l\'image.', 'error');
+                });
+        }
     });
 </script>
 @endsection
 
 @push('styles')
+<style>
 .upload-container {
     background: var(--glass);
     backdrop-filter: blur(20px);
@@ -671,7 +852,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform: 0.5s ease;
+    transition: transform 0.5s ease;
 }
 
 .gallery-item:hover .gallery-img {
@@ -743,6 +924,16 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
+}
+
+.preview-image-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.preview-image-container img {
+    max-height: 200px;
+    border-radius: 10px;
 }
 
 .asset-camera-1 { top: 10%; left: 5%; width: 150px; animation-delay: -1s; }

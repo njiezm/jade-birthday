@@ -2,6 +2,14 @@
 
 @section('title', 'Billetterie - Jade Birthday 23 - Bellini Fest')
 
+@section('floating-assets')
+    <x-floating-asset class="asset-bellini-1" svg="bellini.png"/>
+    <x-floating-asset class="asset-smirnoff-1" svg="smirnoffB.png"/>
+    <x-floating-asset class="asset-glass-1" svg="coupe-martini.png"/>
+    <x-floating-asset class="asset-balloon-1" svg="ballon-rose.png"/>
+    <x-floating-asset class="asset-star-1" svg="etoile.png"/>
+@endsection
+
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -9,7 +17,7 @@
             <div class="payment-container">
                 <div class="text-center mb-5">
                     <h1 class="festival-title mb-4">BILLETS</h1>
-                    <p class="lead">Réservez votre place pour le festival du siècle!</p>
+                    <p class="lead">N'attends pas, réserve vite ta place !</p>
                 </div>
                 
                 <!-- Afficher les messages d'erreur -->
@@ -21,8 +29,24 @@
                 
                 <div class="ticket-card">
                     <div class="ticket-header">
-                        <h3>THE 23 BELLINI FEST</h3>
-                        <p class="mb-0">14 Mars 2026 - Plan Bateau de Folie</p>
+                        <div class="ticket-header-bg"></div>
+                        <div class="ticket-header-content">
+                            <h3>THE 23 BELLINI FEST</h3>
+                            <p class="mb-0">14 Mars 2026 - Plan Bateau de Folie</p>
+                            <p class="mb-0">(aucun remboursement ne sera effectué)</p>
+                            <br>
+                            <br>
+                            <div class="ticket-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
                     </div>
                     
                     <form id="payment-form">
@@ -37,7 +61,7 @@
                                 <div class="ticket-item mb-4" data-ticket-index="0">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h5>Billet 1</h5>
-                                        <span class="badge bg-danger">35€</span>
+                                        <span class="badge bg-danger">30€</span>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
@@ -57,7 +81,7 @@
                                     <i class="bi bi-plus-circle me-2"></i>Ajouter un billet
                                 </button>
                                 <div class="total-price">
-                                    Total: <span id="total-amount">35€</span>
+                                    Total: <span id="total-amount">30€</span>
                                 </div>
                             </div>
                             
@@ -66,17 +90,17 @@
                                 <h4>Méthode de paiement</h4>
                                 <div class="payment-options">
                                     <label class="payment-option">
-                                        <input type="radio" name="payment_method" value="paypal" checked>
+                                        <input type="radio" name="payment_method" value="sumup" checked>
                                         <div class="payment-option-content">
-                                            <i class="fab fa-paypal"></i>
-                                            <span>PayPal</span>
+                                            <i class="fas fa-credit-card"></i>
+                                            <span>Carte bancaire (SumUp)</span>
                                         </div>
                                     </label>
                                     <label class="payment-option">
-                                        <input type="radio" name="payment_method" value="stripe">
+                                        <input type="radio" name="payment_method" value="cash">
                                         <div class="payment-option-content">
-                                            <i class="fab fa-stripe"></i>
-                                            <span>Carte bancaire (Stripe)</span>
+                                            <i class="fas fa-money-bill-wave"></i>
+                                            <span>Paiement en espèces</span>
                                         </div>
                                     </label>
                                 </div>
@@ -85,14 +109,26 @@
                             <!-- Prix affiché -->
                             <div class="price-display">
                                 <span class="price-label">Prix par billet:</span>
-                                <span class="price-value">35€</span>
+                                <span class="price-value">30€</span>
                             </div>
                             
                             <div class="text-center mt-4">
-                                <!-- Conteneur pour les boutons de paiement -->
-                                <div id="paypal-button-container" class="mb-3"></div>
+                                <!-- Indicateur de chargement -->
+                                <div id="loading-indicator" class="mb-3" style="display: none;">
+                                    <div class="spinner-border text-light" role="status">
+                                        <span class="visually-hidden">Chargement...</span>
+                                    </div>
+                                    <p class="mt-2">Traitement en cours...</p>
+                                </div>
+                                
+                                <!-- Conteneur pour le formulaire SumUp -->
+                                <div id="sumup-form-container" class="mb-3">
+                                    <div id="sumup-card"></div>
+                                </div>
+                                
+                                <!-- Bouton de paiement pour espèces -->
                                 <button type="submit" id="submit-button" class="btn btn-danger btn-lg px-5" style="display: none;">
-                                    <i class="bi bi-lock me-2"></i>Payer maintenant
+                                    <i class="bi bi-lock me-2"></i>Confirmer la réservation
                                 </button>
                             </div>
                         </div>
@@ -106,12 +142,14 @@
 <!-- Message d'erreur pour le débogage -->
 <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 
-<script src="https://www.paypal.com/sdk/js?client-id={{ config('paypal.' . config('paypal.mode') . '.client_id') }}&currency=EUR&intent=capture"></script>
+<!-- Script SumUp -->
+<script src="https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let ticketCount = 1;
-        const ticketPrice = 35;
-        let paypalButtonsRendered = false;
+        const ticketPrice = 30;
+        let sumupInstance = null;
+        let isProcessingPayment = false; // Pour éviter les soumissions multiples
         
         // Récupérer le token CSRF
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
@@ -140,7 +178,7 @@
             newTicket.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5>Billet ${ticketCount}</h5>
-                    <span class="badge bg-danger">35€</span>
+                    <span class="badge bg-danger">30€</span>
                     <button type="button" class="btn btn-sm btn-outline-danger remove-ticket">
                         <i class="bi bi-trash"></i>
                     </button>
@@ -201,96 +239,162 @@
             return tickets;
         }
         
+        // Afficher/masquer l'indicateur de chargement
+        function toggleLoading(show) {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const sumupContainer = document.getElementById('sumup-form-container');
+            
+            if (show) {
+                loadingIndicator.style.display = 'block';
+                sumupContainer.style.display = 'none';
+            } else {
+                loadingIndicator.style.display = 'none';
+                sumupContainer.style.display = 'block';
+            }
+        }
+        
         // Gestion du changement de méthode de paiement
         document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
             radio.addEventListener('change', function() {
-                const paypalContainer = document.getElementById('paypal-button-container');
+                const sumupContainer = document.getElementById('sumup-form-container');
                 const submitButton = document.getElementById('submit-button');
                 
-                if (this.value === 'paypal') {
-                    paypalContainer.style.display = 'block';
+                if (this.value === 'sumup') {
+                    sumupContainer.style.display = 'block';
                     submitButton.style.display = 'none';
                     
-                    // Render PayPal buttons only once
-                    if (!paypalButtonsRendered) {
-                        renderPayPalButtons();
-                        paypalButtonsRendered = true;
+                    // Initialiser SumUp si ce n'est pas déjà fait
+                    if (!sumupInstance) {
+                        initSumUp();
                     }
                 } else {
-                    paypalContainer.style.display = 'none';
+                    sumupContainer.style.display = 'none';
                     submitButton.style.display = 'inline-block';
                 }
             });
         });
         
-        // Configuration du bouton PayPal
-        function renderPayPalButtons() {
-            paypal.Buttons({
-                createOrder: function(data, actions) {
-                    const email = document.getElementById('email').value;
-                    const tickets = collectTicketData();
+        // Initialiser SumUp
+        function initSumUp() {
+            // Configuration SumUp (à remplacer avec vos clés API)
+            SumUpCard.mount({
+                id: 'sumup-card',
+                // Remplacer avec votre clé publique SumUp
+                apiKey: 'sup_pk_D9exAU92LHlTqG22V8Rn3etvQH0oq2MyU',
+                // Personnalisation de l'apparence
+                style: {
+                    // Styles personnalisés pour le formulaire de carte
+                },
+                onReady: function() {
+                    console.log('SumUp prêt');
+                    sumupInstance = true;
+                },
+                onCardSubmitted: function(response) {
+                    // Cette fonction est appelée lorsque l'utilisateur soumet les informations de carte
+                    // mais AVANT que le paiement ne soit traité
+                    console.log('Carte soumise:', response);
                     
-                    if (!email || tickets.length === 0) {
-                        showError('Veuillez remplir tous les champs');
+                    // Éviter les traitements multiples
+                    if (isProcessingPayment) {
                         return;
                     }
+                    isProcessingPayment = true;
                     
-                    // Envoyer la requête au serveur
-                    return fetch('/payment/store', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: JSON.stringify({
-                            email: email,
-                            payment_method: 'paypal',
-                            tickets: tickets
-                        })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            // Si la réponse n'est pas OK, essayer de récupérer le message d'erreur
-                            return response.text().then(text => {
-                                throw new Error('Erreur serveur: ' + text);
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            return data.orderID;
-                        } else {
-                            throw new Error(data.message || 'Erreur lors de la création de la commande PayPal');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur:', error);
-                        showError('Erreur PayPal: ' + error.message);
-                        throw error;
-                    });
-                },
-                onApprove: function(data, actions) {
-                    return actions.order.capture().then(function(details) {
-                        // Rediriger vers la page de succès
-                        window.location.href = '/payment/success/' + details.purchase_units[0].reference_id;
-                    });
-                },
-                onError: function(err) {
-                    console.error('Erreur PayPal:', err);
-                    showError('Une erreur est survenue lors du paiement PayPal.');
+                    // Afficher l'indicateur de chargement
+                    toggleLoading(true);
+                    
+                    // Créer la commande et traiter le paiement
+                    processSumUpPayment(response);
                 }
-            }).render('#paypal-button-container');
+            });
         }
         
-        // Gestion de la soumission du formulaire pour Stripe
+        // Traiter le paiement SumUp
+        function processSumUpPayment(cardResponse) {
+            const email = document.getElementById('email').value;
+            const tickets = collectTicketData();
+            
+            if (!email || tickets.length === 0) {
+                showError('Veuillez remplir tous les champs');
+                toggleLoading(false);
+                isProcessingPayment = false;
+                return;
+            }
+            
+            // Envoyer la requête au serveur pour créer la commande
+            fetch('/payment/store', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    email: email,
+                    payment_method: 'sumup',
+                    tickets: tickets
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error('Erreur serveur: ' + text);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Utiliser la réponse de SumUp pour finaliser le paiement
+                    // Le SDK SumUp a déjà créé le paiement, nous devons juste le valider
+                    // avec l'ID de transaction retourné par SumUp
+                    if (cardResponse && cardResponse.transaction_id) {
+                        // Rediriger vers la page de succès
+                        window.location.href = '/payment/success/' + data.reference;
+                    } else {
+                        // Si nous n'avons pas l'ID de transaction, nous devons créer un paiement
+                        SumUpCard.pay({
+                            // ID de la transaction du serveur
+                            id: data.checkout_id,
+                            // Montant en centimes
+                            amount: data.amount * 100,
+                            // Devise
+                            currency: 'EUR',
+                            // Callback de succès
+                            onSuccess: function(response) {
+                                // Rediriger vers la page de succès
+                                window.location.href = '/payment/success/' + data.reference;
+                            },
+                            // Callback d'erreur
+                            onError: function(error) {
+                                console.error('Erreur SumUp:', error);
+                                showError('Une erreur est survenue lors du paiement: ' + error.message);
+                                toggleLoading(false);
+                                isProcessingPayment = false;
+                            }
+                        });
+                    }
+                } else {
+                    showError('Erreur: ' + data.message);
+                    toggleLoading(false);
+                    isProcessingPayment = false;
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showError('Une erreur est survenue. Veuillez réessayer.');
+                toggleLoading(false);
+                isProcessingPayment = false;
+            });
+        }
+        
+        // Gestion de la soumission du formulaire pour le paiement en espèces
         document.getElementById('payment-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
             
-            if (paymentMethod === 'paypal') {
-                return; // PayPal gère déjà la soumission
+            if (paymentMethod === 'sumup') {
+                return; // SumUp gère déjà la soumission
             }
             
             const email = document.getElementById('email').value;
@@ -307,7 +411,7 @@
             submitButton.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Chargement...';
             submitButton.disabled = true;
             
-            // Envoyer la requête au serveur pour Stripe
+            // Envoyer la requête au serveur pour le paiement en espèces
             fetch('/payment/store', {
                 method: 'POST',
                 headers: {
@@ -316,13 +420,12 @@
                 },
                 body: JSON.stringify({
                     email: email,
-                    payment_method: 'stripe',
+                    payment_method: 'cash',
                     tickets: tickets
                 })
             })
             .then(response => {
                 if (!response.ok) {
-                    // Si la réponse n'est pas OK, essayer de récupérer le message d'erreur
                     return response.text().then(text => {
                         throw new Error('Erreur serveur: ' + text);
                     });
@@ -331,8 +434,8 @@
             })
             .then(data => {
                 if (data.success) {
-                    // Rediriger vers Stripe Checkout
-                    window.location.href = data.redirect_url;
+                    // Rediriger vers la page de succès
+                    window.location.href = '/payment/success/' + data.reference;
                 } else {
                     showError('Erreur: ' + data.message);
                 }
@@ -351,7 +454,7 @@
         // Initialiser l'affichage
         updateTotalPrice();
         
-        // Déclencher le changement pour afficher PayPal par défaut
+        // Déclencher le changement pour afficher SumUp par défaut
         document.querySelector('input[name="payment_method"]:checked').dispatchEvent(new Event('change'));
     });
 </script>
@@ -359,6 +462,7 @@
 
 @push('styles')
 <style>
+/* Container principal */
 .payment-container {
     background: var(--glass);
     backdrop-filter: blur(20px);
@@ -366,22 +470,70 @@
     border-radius: 40px;
     padding: 40px;
     box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
 }
 
+/* Carte de billet */
 .ticket-card {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.ticket-card:hover {
+    transform: translateY(-5px);
 }
 
 .ticket-header {
-    background: linear-gradient(135deg, var(--peach), var(--rose));
-    padding: 20px;
+    position: relative;
+    padding: 30px;
     text-align: center;
+    color: white;
+    overflow: hidden;
+}
+
+.ticket-header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #FF6A88, #FF9A8A);
+    z-index: 1;
+}
+
+.ticket-header-content {
+    position: relative;
+    z-index: 2;
+}
+
+.ticket-header h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ticket-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.ticket-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 0 5px;
 }
 
 .ticket-body {
     padding: 30px;
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .ticket-item {
@@ -389,17 +541,31 @@
     border-radius: 15px;
     padding: 20px;
     position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.ticket-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
 }
 
 .remove-ticket {
     position: absolute;
     top: 10px;
     right: 10px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.remove-ticket:hover {
+    opacity: 1;
 }
 
 .total-price {
     font-size: 1.2rem;
     font-weight: bold;
+    color: #FF9A8A;
 }
 
 .payment-methods {
@@ -462,14 +628,27 @@
     color: var(--rose);
 }
 
-#paypal-button-container {
-    min-height: 45px;
+#sumup-form-container {
+    min-height: 200px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+#loading-indicator {
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
 }
 
 .form-control {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--glass-border);
     color: white;
+    border-radius: 10px;
+    padding: 12px 15px;
 }
 
 .form-control:focus {
@@ -482,6 +661,7 @@
 .form-label {
     color: rgba(255, 255, 255, 0.9);
     font-weight: 500;
+    margin-bottom: 8px;
 }
 
 .btn:disabled {
@@ -495,6 +675,18 @@
     right: 20px;
     max-width: 400px;
     z-index: 1000;
+    border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .payment-options {
+        flex-direction: column;
+    }
+    
+    .payment-option {
+        margin-bottom: 10px;
+    }
 }
 </style>
 @endpush

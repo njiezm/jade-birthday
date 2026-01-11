@@ -50,6 +50,7 @@ Route::get('/wishlist/cancel/{reference}', [WishlistController::class, 'cancel']
 Route::get('/galerie', [GalleryController::class, 'index'])->name('galerie');
 Route::post('/galerie', [GalleryController::class, 'store'])->name('galerie.store');
 
+
 // Autres pages (à créer plus tard)
 Route::get('/infos', fn() => view('pages.infos'))->name('infos');
 Route::get('/livre-d-or', fn() => view('pages.livre-d-or'))->name('livre-d-or');

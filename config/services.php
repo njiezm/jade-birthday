@@ -48,5 +48,12 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'sumup' => [
+    'api_key' => env('SUMUP_API_KEY'),
+    'api_secret' => env('SUMUP_API_SECRET'),
+    'merchant_code' => env('SUMUP_MERCHANT_CODE'),
+    'pay_to_email' => env('SUMUP_PAY_TO_EMAIL'),
+],
+
     // ... autres configurations existantes ...
 ];
