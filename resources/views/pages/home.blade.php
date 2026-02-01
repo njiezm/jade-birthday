@@ -34,17 +34,8 @@
     <div>
     
     <div class="header-content container text-center margin-bottom-50">
-        <br>
-        <br>
        
-        
-        <!-- Bouteilles au-dessus de "Jade Présente" -->
-        <div class="bottles-top-container d-flex justify-content-center mb-3" data-aos="fade-down" data-aos-delay="100">
-            <div class="bottle-container mx-3">
-                <img src="{{ asset('images/bellini.png') }}" alt="Lolo" class="img-fluid bottle-image">
-            </div>
-        </div>
-        
+
         <div class="header-badge mt-5" data-aos="fade-down" data-aos-delay="200">
             <p class="mb-0 text-uppercase fw-bold tracking-widest ">Jade Présente</p>
         </div>
