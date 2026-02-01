@@ -40,7 +40,7 @@
         <!-- Bouteilles au-dessus de "Jade Présente" -->
         <div class="bottles-top-container d-flex justify-content-center mb-3" data-aos="fade-down" data-aos-delay="100">
             <div class="bottle-container mx-3">
-                <img src="{{ asset('images/lolo.png') }}" alt="Lolo" class="img-fluid bottle-image">
+                <img src="{{ asset('images/bellini.png') }}" alt="Lolo" class="img-fluid bottle-image">
             </div>
         </div>
         
