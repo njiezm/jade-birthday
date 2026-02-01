@@ -6,9 +6,12 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\TicketController; 
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\HomeController;
 
 // Page d'accueil
-Route::get('/', fn() => view('pages.home'))->name('home');
+//Route::get('/', fn() => view('pages.home'))->name('home');
+// Remplacez la route existante de la page d'accueil par celle-ci
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Routes pour la billetterie
 //Route::get('/billetterie', fn() => view('pages.paiement'))->name('billetterie');
@@ -74,3 +77,7 @@ Route::get('/jeux', fn() => view('pages.jeux'))->name('jeux');
 // Routes pour les messages du mur
 Route::get('/api/messages', [MessageController::class, 'index']);
 Route::post('/api/messages', [MessageController::class, 'store']);
+
+// Dans routes/api.php
+Route::get('/messages', [MessageController::class, 'index']);
+Route::post('/messages', [MessageController::class, 'store']);

@@ -42,7 +42,6 @@
             <div class="bottle-container mx-3">
                 <img src="{{ asset('images/lolo.png') }}" alt="Lolo" class="img-fluid bottle-image">
             </div>
-            
         </div>
         
         <div class="header-badge mt-5" data-aos="fade-down" data-aos-delay="200">
@@ -51,11 +50,9 @@
         
         <!-- Bouteilles en dessous de "Jade Présente" -->
         <div class="bottles-bottom-container d-flex justify-content-center mt-3" data-aos="fade-up" data-aos-delay="300">
-           
            <div class="title-side-image title-right-image bottle-big">
-    <img src="{{ asset('images/smirnoff.png') }}" alt="Smirnoff">
-</div>
-
+                <img src="{{ asset('images/smirnoff.png') }}" alt="Smirnoff">
+            </div>
         </div>
         
         <!-- Conteneur pour le titre avec les images de chaque côté -->
@@ -254,7 +251,6 @@
                 </div>
             </a>
         </div>
-
     </div>
 
     <!-- Interactive Wall Section -->
@@ -265,17 +261,22 @@
                 <div class="row">
                     <div class="col-lg-8 mx-auto">
                         <div class="wall-form mb-4">
-                            <div class="wall-form mb-4">
-    <form id="message-form" class="d-flex flex-column gap-3">
-        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-        <input type="text" class="form-control" id="author-name" placeholder="Ton nom" required>
-        <textarea class="form-control" id="message-content" rows="3" placeholder="Laisse moi un petit mot 💓" required></textarea>
-        <button type="submit" class="btn btn-light btn-lg">
-            <i class="fas fa-paper-plane me-2"></i>Envoyer mon message
-        </button>
-    </form>
-</div>
+                            <form id="message-form" class="d-flex flex-column gap-3">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <input type="text" class="form-control" id="author-name" placeholder="Ton nom" required>
+                                <textarea class="form-control" id="message-content" rows="3" placeholder="Laisse moi un petit mot 💓" required></textarea>
+                                <button type="submit" class="btn btn-light btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>Envoyer mon message
+                                </button>
+                            </form>
                         </div>
+                        
+                        <!-- Messages pré-chargés -->
+                        <div id="preloaded-messages" style="display: none;">
+                            @json($messages)
+                        </div>
+                        
+                        <!-- Mur des messages -->
                         <div id="message-wall" class="message-wall">
                             <!-- Les messages seront chargés ici via JavaScript -->
                             <div class="text-center">
@@ -313,205 +314,314 @@
 </footer>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Compte à rebours - Correction pour 14h au lieu de 15h
-        function updateCountdown() {
-            // Date cible : 14 mars 2026 à 14h00 (format ISO pour éviter les problèmes de fuseau horaire)
-            const eventDate = new Date('2026-03-14T14:00:00').getTime();
-            const now = new Date().getTime();
-            const distance = eventDate - now;
-            
-            if (distance < 0) {
-                document.getElementById('countdown').innerHTML = '<div class="countdown-item"><span class="countdown-number">L\'événement est en cours!</span></div>';
-                return;
-            }
-            
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            
-            document.getElementById('days').innerText = days.toString().padStart(2, '0');
-            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+document.addEventListener('DOMContentLoaded', function() {
+    // Compte à rebours - Correction pour 14h au lieu de 15h
+    function updateCountdown() {
+        // Date cible : 14 mars 2026 à 14h00 (format ISO pour éviter les problèmes de fuseau horaire)
+        const eventDate = new Date('2026-03-14T14:00:00').getTime();
+        const now = new Date().getTime();
+        const distance = eventDate - now;
+        
+        if (distance < 0) {
+            document.getElementById('countdown').innerHTML = '<div class="countdown-item"><span class="countdown-number">L\'événement est en cours!</span></div>';
+            return;
         }
         
-        // Lancer le compte à rebours et mettre à jour chaque seconde
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
         
-        // Charger les messages au chargement de la page
-        loadMessages();
+        document.getElementById('days').innerText = days.toString().padStart(2, '0');
+        document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+    }
+    
+    // Lancer le compte à rebours et mettre à jour chaque seconde
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    
+    // Charger les messages au chargement de la page
+    loadMessages();
+    
+    // Gérer la soumission du formulaire
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Gérer la soumission du formulaire
-// Gérer la soumission du formulaire
-document.getElementById('message-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const authorName = document.getElementById('author-name').value;
-    const content = document.getElementById('message-content').value;
-    
-    // Récupérer le token CSRF depuis le champ hidden
-    const csrfToken = document.querySelector('input[name="_token"]').value;
-    
-    // Afficher un indicateur de chargement
-    const submitButton = this.querySelector('button[type="submit"]');
-    const originalText = submitButton.innerHTML;
-    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Envoi en cours...';
-    submitButton.disabled = true;
-    
-    // Envoyer le message via AJAX
-    fetch('/api/messages', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            author_name: authorName,
-            content: content,
-            _token: csrfToken
+        // Éviter les soumissions multiples
+        if (this.dataset.submitted === 'true') {
+            return;
+        }
+        this.dataset.submitted = 'true';
+        
+        const authorName = document.getElementById('author-name').value;
+        const content = document.getElementById('message-content').value;
+        
+        // Récupérer le token CSRF depuis le champ hidden
+        const csrfToken = document.querySelector('input[name="_token"]').value;
+        
+        // Afficher un indicateur de chargement
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Envoi en cours...';
+        submitButton.disabled = true;
+        
+        // Envoyer le message via AJAX
+        fetch('/api/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                author_name: authorName,
+                content: content,
+                _token: csrfToken
+            })
         })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Erreur réseau: ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Ajouter le nouveau message au mur
-        addMessageToWall(data);
-        
-        // Réinitialiser le formulaire
-        document.getElementById('author-name').value = '';
-        document.getElementById('message-content').value = '';
-        
-        // Afficher une notification de succès
-        showNotification('Message envoyé avec succès !', 'success');
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
-    })
-    .finally(() => {
-        // Restaurer le bouton
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-    });
-});
-        // Fonction pour charger les messages
-        function loadMessages() {
-            const messageWall = document.getElementById('message-wall');
-            messageWall.innerHTML = '<div class="text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Chargement...</span></div></div>';
-            
-            try {
-                fetch('/api/messages')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erreur réseau: ' + response.status);
-                        }
-                        return response.json();
-                    })
-                    .then(messages => {
-                        messageWall.innerHTML = '';
-                        
-                        if (messages.length === 0) {
-                            messageWall.innerHTML = '<p class="text-center">Soyez le premier à laisser un message !</p>';
-                            return;
-                        }
-                        
-                        messages.forEach(message => {
-                            addMessageToWall(message);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors du chargement des messages:', error);
-                        messageWall.innerHTML = '<p class="text-center">Une erreur est survenue lors du chargement des messages.</p>';
-                    });
-            } catch (error) {
-                console.error('Erreur:', error);
-                messageWall.innerHTML = '<p class="text-center">Une erreur est survenue lors du chargement des messages.</p>';
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur réseau: ' + response.status);
             }
-        }
-        
-        
-        // Fonction pour ajouter un message au mur
-        function addMessageToWall(message) {
-            const messageWall = document.getElementById('message-wall');
+            return response.json();
+        })
+        .then(data => {
+            console.log('Réponse du serveur:', data);
             
-            // Si c'est le premier message ou si le mur est vide
-            if (messageWall.querySelector('.text-center') !== null) {
-                messageWall.innerHTML = '';
-            }
-            
-            const messageItem = document.createElement('div');
-            messageItem.className = 'message-item';
-            messageItem.innerHTML = `
-                <strong>${message.author_name}</strong>
-                <p>${message.content}</p>
-                <small class="text-muted d-block">${formatDate(message.created_at)}</small>
-            `;
-            
-            // Ajouter au début du mur
-            messageWall.insertBefore(messageItem, messageWall.firstChild);
-            
-            // Limiter le nombre de messages affichés à 10
-            const messageItems = messageWall.querySelectorAll('.message-item');
-            if (messageItems.length > 10) {
-                messageItems[messageItems.length - 1].remove();
-            }
-        }
-        
-        // Fonction pour formater la date
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            
-            if (diffMins < 1) {
-                return "À l'instant";
-            } else if (diffMins < 60) {
-                return `Il y a ${diffMins} minute${diffMins > 1 ? 's' : ''}`;
-            } else if (diffMins < 1440) {
-                const diffHours = Math.floor(diffMins / 60);
-                return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
+            if (data.success) {
+                // Ajouter le nouveau message au mur
+                addMessageToWall(data);
+                
+                // Réinitialiser le formulaire
+                document.getElementById('author-name').value = '';
+                document.getElementById('message-content').value = '';
+                
+                // Afficher une notification de succès
+                showNotification('Message envoyé avec succès !', 'success');
             } else {
-                return date.toLocaleDateString('fr-FR');
+                throw new Error(data.message || 'Erreur lors de l\'envoi du message');
             }
-        }
-        
-        // Fonction pour afficher une notification
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed top-0 start-50 translate-middle-x mt-3`;
-            notification.style.zIndex = '9999';
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            // Supprimer la notification après 3 secondes
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
-        // Correction du scroll pour le bouton Découvrir
-        document.querySelector('a[href="#content"]').addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const target = document.querySelector('#content');
-            const headerHeight = window.innerWidth <= 767 ? 150 : 100; // Plus d'espace sur mobile
-            
-            window.scrollTo({
-                top: target.offsetTop - headerHeight,
-                behavior: 'smooth'
-            });
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
+        })
+        .finally(() => {
+            // Restaurer le bouton
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+            // Réinitialiser l'indicateur de soumission
+            this.dataset.submitted = 'false';
         });
     });
+    
+    // Fonction pour charger les messages
+    function loadMessages() {
+        const messageWall = document.getElementById('message-wall');
+        messageWall.innerHTML = '<div class="text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Chargement...</span></div></div>';
+        
+        // Essayer d'utiliser les messages préchargés
+        const preloadedMessagesElement = document.getElementById('preloaded-messages');
+        if (preloadedMessagesElement) {
+            try {
+                const messages = JSON.parse(preloadedMessagesElement.textContent);
+                console.log('Messages préchargés:', messages);
+                
+                messageWall.innerHTML = '';
+                
+                if (!messages || messages.length === 0) {
+                    messageWall.innerHTML = '<p class="text-center">Soyez le premier à laisser un message !</p>';
+                    return;
+                }
+                
+                // Afficher chaque message
+                messages.forEach((message, index) => {
+                    console.log(`Message préchargé ${index}:`, message);
+                    addMessageToWall(message);
+                });
+                
+                return; // Sortir de la fonction si les messages préchargés ont été utilisés
+            } catch (e) {
+                console.error('Erreur lors du parsing des messages préchargés:', e);
+            }
+        }
+        
+        // Si les messages préchargés ne sont pas disponibles ou en cas d'erreur, utiliser l'API
+        try {
+            fetch('/api/messages')
+                .then(response => {
+                    console.log('Statut de la réponse:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(messages => {
+                    console.log('Messages chargés (bruts):', messages);
+                    
+                    messageWall.innerHTML = '';
+                    
+                    if (!messages || !Array.isArray(messages)) {
+                        console.error('Réponse invalide:', messages);
+                        messageWall.innerHTML = '<p class="text-center">Format de réponse invalide.</p>';
+                        return;
+                    }
+                    
+                    if (messages.length === 0) {
+                        messageWall.innerHTML = '<p class="text-center">Soyez le premier à laisser un message !</p>';
+                        return;
+                    }
+                    
+                    // Afficher chaque message
+                    messages.forEach((message, index) => {
+                        console.log(`Message ${index}:`, message);
+                        addMessageToWall(message);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des messages:', error);
+                    messageWall.innerHTML = '<p class="text-center">Une erreur est survenue lors du chargement des messages: ' + error.message + '</p>';
+                });
+        } catch (error) {
+            console.error('Erreur:', error);
+            messageWall.innerHTML = '<p class="text-center">Une erreur est survenue lors du chargement des messages.</p>';
+        }
+    }
+    
+    // Fonction pour ajouter un message au mur
+    function addMessageToWall(data) {
+        const messageWall = document.getElementById('message-wall');
+        
+        // Si c'est le premier message ou si le mur est vide
+        if (messageWall.querySelector('.text-center') !== null) {
+            messageWall.innerHTML = '';
+        }
+        
+        // Extraire les données du message (gérer les deux formats possibles)
+        let message;
+        if (data.data) {
+            // Format de la réponse de la méthode store
+            message = data.data;
+        } else if (data.author_name !== undefined || data.content !== undefined) {
+            // Format direct de la réponse de la méthode index
+            message = data;
+        } else {
+            console.error('Format de message non reconnu:', data);
+            return;
+        }
+        
+        // Vérifier que les données nécessaires existent
+        const authorName = message.author_name || 'Anonyme';
+        const content = message.content || '';
+        const createdAt = message.created_at || new Date().toISOString();
+        
+        console.log('Ajout du message:', { authorName, content, createdAt });
+        
+        const messageItem = document.createElement('div');
+        messageItem.className = 'message-item';
+        messageItem.innerHTML = `
+            <strong>${escapeHtml(authorName)}</strong>
+            <p>${escapeHtml(content)}</p>
+            <small class="text-muted d-block">${formatDate(createdAt)}</small>
+        `;
+        
+        // Ajouter au début du mur
+        messageWall.insertBefore(messageItem, messageWall.firstChild);
+        
+        // Limiter le nombre de messages affichés à 10
+        const messageItems = messageWall.querySelectorAll('.message-item');
+        if (messageItems.length > 10) {
+            messageItems[messageItems.length - 1].remove();
+        }
+    }
+    
+    // Fonction pour échapper les caractères HTML (sécurité)
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+    
+    // Fonction pour formater la date
+    function formatDate(dateString) {
+        // Si la date est null ou undefined, utiliser la date actuelle
+        if (!dateString) {
+            return "À l'instant";
+        }
+        
+        let date;
+        
+        // Essayer de créer une date à partir de la chaîne
+        try {
+            date = new Date(dateString);
+            
+            // Vérifier si la date est valide
+            if (isNaN(date.getTime())) {
+                throw new Error('Date invalide');
+            }
+        } catch (e) {
+            console.error('Erreur de formatage de date:', e);
+            return "Date inconnue";
+        }
+        
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        
+        if (diffMins < 1) {
+            return "À l'instant";
+        } else if (diffMins < 60) {
+            return `Il y a ${diffMins} minute${diffMins > 1 ? 's' : ''}`;
+        } else if (diffMins < 1440) {
+            const diffHours = Math.floor(diffMins / 60);
+            return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
+        } else {
+            // Utiliser toLocaleDateString avec des options pour un meilleur formatage
+            return date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'short',
+                year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+            });
+        }
+    }
+    
+    // Fonction pour afficher une notification
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed top-0 start-50 translate-middle-x mt-3`;
+        notification.style.zIndex = '9999';
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Supprimer la notification après 3 secondes
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Correction du scroll pour le bouton Découvrir
+    document.querySelector('a[href="#content"]').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const target = document.querySelector('#content');
+        const headerHeight = window.innerWidth <= 767 ? 150 : 100; // Plus d'espace sur mobile
+        
+        window.scrollTo({
+            top: target.offsetTop - headerHeight,
+            behavior: 'smooth'
+        });
+    });
+});
 </script>
 
 <style>
@@ -643,7 +753,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
     .logo-container {
         top: 10px;
         left: 10px;
-        z-index: 10; /* Assurer que le logo reste visible */
+        z-index: 10;
     }
     
     .logo-header {
@@ -663,7 +773,6 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
         align-items: center;
     }
     
-    /* Correction pour afficher le logo sur mobile */
     .title-side-image.title-left-image {
         display: block !important;
         position: relative;
@@ -707,7 +816,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
 /* Bouteilles générales */
 .bottle-container {
-    width: 280px;   /* TAILLE RÉELLE */
+    width: 280px;
 }
 
 .bottle-image {
@@ -738,7 +847,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 
 /* Bouteilles géantes autour du titre */
 .bottle-big img {
-    height: 420px;      /* 🔥 GROS */
+    height: 420px;
     width: auto;
     max-width: none;
     object-fit: contain;
@@ -787,7 +896,7 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
 /* Ajustement pour le logo à gauche du titre */
 @media (max-width: 767px) {
     .title-left-image {
-        display: block !important; /* Forcer l'affichage du logo sur mobile */
+        display: block !important;
         position: relative;
         margin-bottom: 15px;
         transform: none !important;

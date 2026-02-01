@@ -2,14 +2,6 @@
 
 @section('title', 'Galerie - Jade Birthday 23 - Bellini Fest')
 
-@section('floating-assets')
-    <x-floating-asset class="asset-bellini-1" svg="bellini.png"/>
-    <x-floating-asset class="asset-coupe-1" svg="coupe.png"/>
-    <x-floating-asset class="asset-smirnoff-1" svg="smirnoff.png"/>
-    <x-floating-asset class="asset-martini-1" svg="martini.png"/>
-    <x-floating-asset class="asset-camera-1" svg="camera.png"/>
-    <x-floating-asset class="asset-champagne-1" svg="champagne.png"/>
-@endsection
 
 @section('content')
 <div class="container py-5">
@@ -95,17 +87,17 @@
             @forelse($media as $mediaItem)
             <div class="gallery-item" data-id="{{ $mediaItem->id }}">
                 <div class="gallery-media-container">
-                    @if($mediaItem->is_video)
-                    <video class="gallery-video" poster="{{ $mediaItem->thumbnail_url }}" preload="metadata">
-                        <source src="{{ $mediaItem->media_url }}" type="video/mp4">
-                        Votre navigateur ne supporte pas les vidéos HTML5.
-                    </video>
-                    <div class="video-play-btn">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    @else
-                    <img src="{{ $mediaItem->thumbnail_url }}" alt="Festival moment" class="gallery-img">
-                    @endif
+@if($mediaItem->is_video)
+<video class="gallery-video" poster="{{ $mediaItem->thumbnail_url }}" preload="metadata">
+    <source src="{{ $mediaItem->media_url }}" type="video/mp4">
+    Votre navigateur ne supporte pas les vidéos HTML5.
+</video>
+<div class="video-play-btn">
+    <i class="fas fa-play-circle"></i>
+</div>
+@else
+<img src="{{ $mediaItem->thumbnail_url }}" alt="Festival moment" class="gallery-img">
+@endif
                     <div class="gallery-overlay">
                         <div class="gallery-info">
                             <h5>{{ $mediaItem->author_name ?? 'Anonyme' }}</h5>
@@ -343,87 +335,88 @@
             }
         });
         
-        // Fonction pour gérer les fichiers
-        function handleFile(file) {
-            if (file.type.startsWith('image/')) {
-                mediaTypeInput.value = 'image';
-                currentMediaType = 'image';
-                currentMediaFile = file;
-                
-                // Vérifier la taille du fichier (limite à 10MB)
-                if (file.size > 10 * 1024 * 1024) {
-                    showNotification('Le fichier est trop grand. Veuillez choisir un fichier de moins de 10MB.', "error");
-                    return;
-                }
-                
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    previewContainer.style.display = 'block';
-                    uploadArea.querySelector('.upload-content').style.display = 'none';
-                    submitBtn.disabled = false;
-                };
-                
-                reader.readAsDataURL(file);
-            } else if (file.type.startsWith('video/')) {
-                mediaTypeInput.value = 'video';
-                currentMediaType = 'video';
-                currentMediaFile = file;
-                
-                // Vérifier la taille du fichier (limite à 10MB)
-                if (file.size > 10 * 1024 * 1024) {
-                    showNotification('Le fichier est trop grand. Veuillez choisir un fichier de moins de 10MB.', "error");
-                    return;
-                }
-                
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    videoPreview.src = e.target.result;
-                    videoPreview.style.display = 'block';
-                    uploadArea.querySelector('.upload-content').style.display = 'none';
-                    submitBtn.disabled = false;
-                };
-                
-                reader.readAsDataURL(file);
-            } else {
-                showNotification('Veuillez sélectionner un fichier image ou vidéo valide.', "error");
-            }
+// Fonction pour gérer les fichiers
+function handleFile(file) {
+    if (file.type.startsWith('image/')) {
+        mediaTypeInput.value = 'image';
+        currentMediaType = 'image';
+        currentMediaFile = file;
+        
+        // Vérifier la taille du fichier (limite à 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            showNotification('Le fichier est trop grand. Veuillez choisir un fichier de moins de 10MB.', "error");
+            return;
         }
         
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+            previewContainer.style.display = 'flex'; // Utiliser flex pour un meilleur centrage
+            uploadArea.querySelector('.upload-content').style.display = 'none';
+            submitBtn.disabled = false;
+        };
+        
+        reader.readAsDataURL(file);
+    } else if (file.type.startsWith('video/')) {
+        mediaTypeInput.value = 'video';
+        currentMediaType = 'video';
+        currentMediaFile = file;
+        
+        // Vérifier la taille du fichier (limite à 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            showNotification('Le fichier est trop grand. Veuillez choisir un fichier de moins de 10MB.', "error");
+            return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            videoPreview.src = e.target.result;
+            videoPreview.style.display = 'block';
+            previewContainer.style.display = 'flex'; // Utiliser flex pour un meilleur centrage
+            uploadArea.querySelector('.upload-content').style.display = 'none';
+            submitBtn.disabled = false;
+        };
+        
+        reader.readAsDataURL(file);
+    } else {
+        showNotification('Veuillez sélectionner un fichier image ou vidéo valide.', "error");
+    }
+}   
         // Bouton pour supprimer la preview
         removePreview.addEventListener('click', function() {
             resetUploadForm();
         });
         
         // Fonction pour réinitialiser le formulaire d'upload
-        function resetUploadForm() {
-            imageInput.value = '';
-            videoInput.value = '';
-            cameraInput.value = '';
-            previewContainer.style.display = 'none';
-            videoPreview.style.display = 'none';
-            currentMediaFile = null;
-            
-            // Recréer le contenu original de l'upload-area
-            uploadArea.innerHTML = `
-                <div class="upload-content">
-                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
-                    <p>Glissez-déposez votre photo ou vidéo ici</p>
-                    <input type="file" id="image-input" name="media" accept="image/*" style="display: none;">
-                    <input type="file" id="video-input" name="media" accept="video/*" style="display: none;">
-                    <input type="file" id="camera-input" name="media" accept="image/*" capture="camera" style="display: none;">
-                    <video id="video-preview" style="display: none; width: 100%; max-height: 300px;" controls></video>
-                    <input type="hidden" id="media-type" name="media_type" value="image">
-                </div>
-            `;
-            
-            // Réattacher les écouteurs d'événements
-            attachEventListeners();
-            
-            submitBtn.disabled = true;
-        }
+        // Fonction pour réinitialiser le formulaire d'upload
+function resetUploadForm() {
+    imageInput.value = '';
+    videoInput.value = '';
+    cameraInput.value = '';
+    previewContainer.style.display = 'none';
+    videoPreview.style.display = 'none';
+    currentMediaFile = null; // Assurez-vous que cette ligne est présente
+    
+    // Recréer le contenu original de l'upload-area
+    uploadArea.innerHTML = `
+        <div class="upload-content">
+            <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+            <p>Glissez-déposez votre photo ou vidéo ici</p>
+            <input type="file" id="image-input" name="media" accept="image/*" style="display: none;">
+            <input type="file" id="video-input" name="media" accept="video/*" style="display: none;">
+            <input type="file" id="camera-input" name="media" accept="image/*" capture="camera" style="display: none;">
+            <video id="video-preview" style="display: none; width: 100%; max-height: 300px;" controls></video>
+            <input type="hidden" id="media-type" name="media_type" value="image">
+        </div>
+    `;
+    
+    // Réattacher les écouteurs d'événements
+    attachEventListeners();
+    
+    submitBtn.disabled = true;
+}
         
         // Fonction pour attacher les écouteurs d'événements
         function attachEventListeners() {
@@ -473,57 +466,80 @@
                 }
             });
         }
+     // Soumission du formulaire
+uploadForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Vérifier qu'un fichier a été sélectionné
+    if (!currentMediaFile) {
+        showNotification('Veuillez sélectionner une image ou une vidéo.', "error");
+        return;
+    }
+    
+    // Afficher un indicateur de chargement
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
+    
+    // Créer un FormData pour l'envoi
+    const formData = new FormData();
+    
+    // Ajouter tous les champs du formulaire
+    formData.append('media', currentMediaFile);
+    formData.append('media_type', document.getElementById('media-type').value);
+    formData.append('author_name', document.getElementById('author_name').value);
+    formData.append('caption', document.getElementById('caption').value);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    
+    // Envoyer le formulaire
+    fetch(uploadForm.action, {
+        method: 'POST',
+        body: formData,
+        // Ne pas définir le header Content-Type, il sera automatiquement défini avec le boundary correct
+    })
+    .then(response => {
+        // Gérer les différents codes de statut
+        if (response.status === 302) {
+            // Redirection - le média a été téléchargé avec succès
+            window.location.href = response.headers.get('Location') || window.location.href;
+            return;
+        }
         
-        // Soumission du formulaire
-        uploadForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Afficher un indicateur de chargement
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
-            
-            // Créer un FormData pour l'envoi
-            const formData = new FormData(uploadForm);
-            
-            // Ajouter le fichier
-            if (currentMediaFile) {
-                formData.set('media', currentMediaFile);
-            }
-            
-            // Envoyer le formulaire
-            fetch(uploadForm.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Afficher un message de succès
-                    showNotification(data.message);
-                    
-                    // Réinitialiser le formulaire
-                    resetUploadForm();
-                    
-                    // Ajouter le nouveau média à la galerie sans recharger la page
-                    if (data.media_url) {
-                        addMediaToGallery(data);
-                    }
-                } else {
-                    throw new Error(data.message || 'Erreur lors de l\'envoi du média');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showNotification('Une erreur est survenue lors du téléchargement de votre média.', "error");
-                
-                // Réinitialiser le bouton
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Partager';
+        if (!response.ok) {
+            // Pour les erreurs 4xx et 5xx, essayer de parser la réponse JSON
+            return response.json().then(data => {
+                throw new Error(data.message || `Erreur ${response.status}: ${response.statusText}`);
+            }).catch(() => {
+                // Si le parsing JSON échoue, utiliser le texte de la réponse
+                throw new Error(`Erreur ${response.status}: ${response.statusText}`);
             });
-        });
+        }
+        
+        // Pour les réponses réussies (200-299), parser le JSON
+        return response.json();
+    })
+    .then(data => {
+        if (data && data.success) {
+            // Afficher un message de succès
+            showNotification(data.message);
+            
+            // Réinitialiser le formulaire
+            resetUploadForm();
+            
+            // Ajouter le nouveau média à la galerie sans recharger la page
+            if (data.media_url) {
+                addMediaToGallery(data);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showNotification(error.message || 'Une erreur est survenue lors du téléchargement de votre média.', "error");
+        
+        // Réinitialiser le bouton
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Partager';
+    });
+});
         
         // Fonction pour ajouter un média à la galerie sans recharger la page
         function addMediaToGallery(data) {
@@ -1129,6 +1145,53 @@
     .gallery-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
+}
+
+.preview-container {
+    position: relative;
+    width: 100%;
+    max-height: 300px; /* Ajouter une hauteur maximale */
+    text-align: center;
+    display: flex; /* Ajouter flex pour centrer */
+    justify-content: center; /* Centrer horizontalement */
+    align-items: center; /* Centrer verticalement */
+}
+
+.preview-container img {
+    max-width: 100%;
+    max-height: 300px; /* Limiter la hauteur maximale */
+    width: auto; /* Laisser la largeur s'ajuster automatiquement */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    object-fit: contain; /* S'assurer que l'image n'est pas déformée */
+}
+
+.preview-container {
+    position: relative;
+    width: 100%;
+    max-height: 300px;
+    display: flex; /* Utiliser flex pour un meilleur centrage */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Cacher tout ce qui dépasse */
+}
+
+.preview-container img {
+    max-width: 100%;
+    max-height: 100px;
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    object-fit: contain; /* S'assurer que l'image n'est pas déformée */
+}
+
+.preview-container video {
+    max-width: 100%;
+    max-height: 100px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    object-fit: contain; /* S'assurer que la vidéo n'est pas déformée */
 }
 </style>
 @endpush

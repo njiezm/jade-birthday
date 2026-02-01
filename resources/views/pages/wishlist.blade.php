@@ -316,25 +316,37 @@
             </div>
             
             <!-- Options de livraison/paiement -->
-            <div class="payment-methods mb-4">
-                <h4>Mode de livraison/paiement</h4>
-                <div class="payment-options">
-                    <label class="payment-option">
-                        <input type="radio" name="payment_method" value="paypal" checked>
-                        <div class="payment-option-content">
-                            <i class="fab fa-paypal"></i>
-                            <span>Payer avec PayPal</span>
-                        </div>
-                    </label>
-                    <label class="payment-option">
-                        <input type="radio" name="payment_method" value="inperson">
-                        <div class="payment-option-content">
-                            <i class="fas fa-hand-holding-heart"></i>
-                            <span>Offrir en main propre</span>
-                        </div>
-                    </label>
-                </div>
+<div class="payment-methods mb-4">
+    <h4>Mode de livraison/paiement</h4>
+    <div class="payment-options">
+        <label class="payment-option">
+            <input type="radio" name="payment_method" value="transfer" checked>
+            <div class="payment-option-content">
+                <i class="fas fa-university"></i>
+                <span>Virement bancaire</span>
             </div>
+        </label>
+        <label class="payment-option">
+            <input type="radio" name="payment_method" value="inperson">
+            <div class="payment-option-content">
+                <i class="fas fa-hand-holding-heart"></i>
+                <span>Offrir en main propre</span>
+            </div>
+        </label>
+    </div>
+    
+    <!-- Informations bancaires -->
+    <div id="bank-info" class="mt-4 p-3 bg-light bg-opacity-10 rounded">
+        <h5>Coordonnées bancaires</h5>
+        <div class="bank-details">
+            <p><strong>Titulaire du compte :</strong> Jade [Nom de famille]</p>
+            <p><strong>IBAN :</strong> FR76 1234 5678 9012 3456 7890 123</p>
+            <p><strong>BIC :</strong> BNPAFRPPXXX</p>
+            <p><strong>Banque :</strong> BNP Paribas</p>
+            <p class="mt-3"><em>Merci de noter votre nom dans la référence du virement pour que je puisse vous remercier personnellement !</em></p>
+        </div>
+    </div>
+</div>
             
             <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-outline-light" id="cancel-btn">Annuler</button>

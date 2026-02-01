@@ -8,53 +8,41 @@ use Illuminate\Database\Eloquent\Model;
 class Gallery extends Model
 {
     use HasFactory;
-    protected $table = 'galery';
+    
+    protected $table = 'galery'; // Corriger le nom de la table
+    
     protected $fillable = [
-        'media_path',
-        'media_type',
+        'image_path', // Corriger le nom de la colonne
         'author_name',
-        'caption',
         'approved',
+        'caption',
+        'media_type',
+        'filter_name',
         'thumbnail_path'
     ];
     
-    protected $casts = [
-        'approved' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
-    ];
-    
-    /**
-     * Obtenir l'URL de la miniature si elle existe, sinon retourner l'URL du média
-     */
-    public function getThumbnailUrlAttribute()
+    // Ajouter des accesseurs pour la compatibilité avec la vue
+    public function getMediaUrlAttribute()
     {
-        if ($this->thumbnail_path && Storage::disk('public')->exists($this->thumbnail_path)) {
-            return Storage::url($this->thumbnail_path);
-        }
-        
-        // Pour les vidéos, retourner une image par défaut
-        if ($this->is_video) {
-            return asset('images/video-placeholder.jpg');
-        }
-        
-        // Pour les images sans miniature, retourner l'image originale
-        return Storage::url($this->media_path);
+        return asset('storage/' . $this->image_path);
     }
     
-    /**
-     * Vérifier si le média est une vidéo
-     */
+    public function getThumbnailUrlAttribute()
+    {
+        // Si thumbnail_path est null, utiliser l'image originale
+        return $this->thumbnail_path 
+            ? asset('storage/' . $this->thumbnail_path) 
+            : asset('storage/' . $this->image_path);
+    }
+    
     public function getIsVideoAttribute()
     {
         return $this->media_type === 'video';
     }
     
-    /**
-     * Obtenir l'URL du média
-     */
-    public function getMediaUrlAttribute()
+    // Formater la date
+    public function getFormattedDateAttribute()
     {
-        return Storage::url($this->media_path);
+        return $this->created_at->format('d/m/Y H:i');
     }
 }
