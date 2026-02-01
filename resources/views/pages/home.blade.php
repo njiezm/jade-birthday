@@ -40,16 +40,9 @@
             <p class="mb-0 text-uppercase fw-bold tracking-widest ">Jade Présente</p>
         </div>
         
-        <!-- Bouteilles en dessous de "Jade Présente" -->
-        <div class="bottles-bottom-container d-flex justify-content-center mt-3" data-aos="fade-up" data-aos-delay="300">
-           <div class="title-side-image title-right-image bottle-big">
-                <img src="{{ asset('images/smirnoff.png') }}" alt="Smirnoff">
-            </div>
-        </div>
-        
+
         <!-- Conteneur pour le titre avec les images de chaque côté -->
         <div class="title-container" data-aos="zoom-in" data-aos-delay="400">
-            <!-- Logo à la place de l'image Bellini -->
             <div class="title-side-image title-left-image">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid">
             </div>
