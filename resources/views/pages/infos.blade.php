@@ -55,9 +55,9 @@
                                 <div class="timeline-content">
                                     <h4>14 Mars 2026</h4>
                                     <div class="time-badge bg-danger text-white px-3 py-2 rounded d-inline-block">
-                                        <i class="fas fa-door-open me-2"></i> 15:00
+                                        <i class="fas fa-door-open me-2"></i> 14:00
                                     </div>
-                                    <p class="mt-2">Arrivée des premiers invités</p>
+                                    <p class="mt-2">Arrivée des invités</p>
                                 </div>
                             </div>
                             
@@ -65,21 +65,13 @@
                                 <div class="timeline-dot middle-dot"></div>
                                 <div class="timeline-content">
                                     <div class="time-badge bg-warning text-dark px-3 py-2 rounded d-inline-block">
-                                        <i class="fas fa-glass-cheers me-2"></i> 15:30
+                                        <i class="fas fa-glass-cheers me-2"></i> 14:15
                                     </div>
-                                    <p class="mt-2">Début des festivités</p>
+                                    <p class="mt-2">Départ</p>
                                 </div>
                             </div>
                             
-                            <div class="timeline-item">
-                                <div class="timeline-dot end-dot"></div>
-                                <div class="timeline-content">
-                                    <div class="time-badge bg-danger text-white px-3 py-2 rounded d-inline-block">
-                                        <i class="fas fa-door-closed me-2"></i> 21:00
-                                    </div>
-                                    <p class="mt-2">Fin de la fête</p>
-                                </div>
-                            </div>
+            
                         </div>
                     </div>
                 </div>

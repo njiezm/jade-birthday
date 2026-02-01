@@ -52,7 +52,7 @@
 
     <footer class="text-center py-5 mt-5">
         <div class="container">
-            <h3 class="mb-4 tracking-tighter" style="font-size: 3rem;">JADE 23</h3>
+            <h3 class="mb-4 tracking-tighter" style="font-size: 3rem;">JAAD 23</h3>
             <div class="d-flex justify-content-center gap-4 fs-3 mb-4">
                 <i class="fa-solid fa-martini-glass-citrus"></i>
                 <i class="fa-solid fa-compact-disc"></i>
