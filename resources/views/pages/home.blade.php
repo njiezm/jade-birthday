@@ -25,8 +25,7 @@
 <header class="festival-header">
      <br>
         <br>
-        <br>
-        <br>
+       
     <div class="header-img-container">
         <div class="header-overlay"></div>
         <div class="logo-container">
@@ -37,8 +36,7 @@
     <div class="header-content container text-center margin-bottom-50">
         <br>
         <br>
-        <br>
-        <br> 
+       
         
         <!-- Bouteilles au-dessus de "Jade Présente" -->
         <div class="bottles-top-container d-flex justify-content-center mb-3" data-aos="fade-down" data-aos-delay="100">
