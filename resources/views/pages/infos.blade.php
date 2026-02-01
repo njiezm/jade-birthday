@@ -189,31 +189,31 @@
                     <div class="card-body p-4">
                         <p class="card-text">Pour toute question, n'hésitez pas à contacter Jade :</p>
                         <div class="contact-methods">
-                            <a href="tel:+262XXXXXXXXX" class="contact-item">
+                            <a href="tel:+596696388072" class="contact-item">
                                 <div class="contact-icon">
                                     <i class="fas fa-phone"></i>
                                 </div>
                                 <div class="contact-text">
                                     <h5>Téléphone</h5>
-                                    <p>+262 XXX XXX XXX</p>
+                                    <p>+596 696 38 80 72</p>
                                 </div>
                             </a>
-                            <a href="mailto:jade@example.com" class="contact-item">
+                            <a href="mailto:jade.buval@gmail.com" class="contact-item">
                                 <div class="contact-icon">
                                     <i class="fas fa-envelope"></i>
                                 </div>
                                 <div class="contact-text">
                                     <h5>Email</h5>
-                                    <p>jade@example.com</p>
+                                    <p>jade.buval@gmail.com</p>
                                 </div>
                             </a>
-                            <a href="https://instagram.com/jade_birthday" target="_blank" class="contact-item">
+                            <a href="https://instagram.com/jaad.bvl" target="_blank" class="contact-item">
                                 <div class="contact-icon">
                                     <i class="fab fa-instagram"></i>
                                 </div>
                                 <div class="contact-text">
                                     <h5>Instagram</h5>
-                                    <p>@jade_birthday</p>
+                                    <p>@jaad.bvl</p>
                                 </div>
                             </a>
                         </div>

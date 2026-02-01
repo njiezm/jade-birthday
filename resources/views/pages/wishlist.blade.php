@@ -339,10 +339,10 @@
     <div id="bank-info" class="mt-4 p-3 bg-light bg-opacity-10 rounded">
         <h5>Coordonnées bancaires</h5>
         <div class="bank-details">
-            <p><strong>Titulaire du compte :</strong> Jade [Nom de famille]</p>
-            <p><strong>IBAN :</strong> FR76 1234 5678 9012 3456 7890 123</p>
-            <p><strong>BIC :</strong> BNPAFRPPXXX</p>
-            <p><strong>Banque :</strong> BNP Paribas</p>
+            <p><strong>Titulaire du compte :</strong> Jade BUVAL</p>
+            <p><strong>IBAN :</strong> FR76 4061 8804 5200 0402 6057 547</p>
+            <p><strong>BIC :</strong> BOUS FRPP XXX</p>
+            <p><strong>Banque :</strong> 40618</p>
             <p class="mt-3"><em>Merci de noter votre nom dans la référence du virement pour que je puisse vous remercier personnellement !</em></p>
         </div>
     </div>
