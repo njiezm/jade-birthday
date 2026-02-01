@@ -26,12 +26,11 @@
      <br>
         <br>
        
-    <div class="header-img-container">
+    <!--div class="header-img-container">
         <div class="header-overlay"></div>
         <div class="logo-container">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid logo-header">
         </div>
-    <div>
+    <div-->
     
     <div class="header-content container text-center margin-bottom-50">
        
