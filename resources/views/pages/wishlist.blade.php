@@ -2,46 +2,6 @@
 
 @section('title', 'Wishlist - Jade Birthday 23 - Bellini Fest')
 
-@section('floating-assets')
-    <x-floating-asset class="asset-bellini-1" svg="bellini.png"/>
-    <x-floating-asset class="asset-coupe-1" svg="coupe.png"/>
-    <x-floating-asset class="asset-smirnoff-1" svg="smirnoff.png"/>
-    <x-floating-asset class="asset-martini-1" svg="martini.png"/>
-@endsection
-
-@section('content')
-<div class="wishlist-hero">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <div class="hero-content">
-                    <h1 class="hero-title">WISHLIST</h1>
-                    <p class="hero-subtitle">Pour mes 23 ans, offrez-moi un cadeau inoubliable</p>
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <span class="stat-number">23</span>
-                            <span class="stat-label">Ans</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">14</span>
-                            <span class="stat-label">Mars</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">2026</span>
-                            <span class="stat-label">Année</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="hero-image">
-                    <img src="{{ asset('images/bellini-hero.png') }}" alt="Martini Bellini" class="img-fluid">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -52,12 +12,205 @@
                 </div>
                 
                 <div class="gifts-grid">
-                    <div class="gift-card gift-contribution" data-type="contribution" data-amount="20">
-                        <div class="gift-icon">
-                            <i class="fas fa-gift"></i>
+                    <!-- Bijoux Chevalière -->
+                    <div class="gift-card" data-type="chevaliere" data-amount="50" data-description="Bijoux Chevalière">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/chevaliere.jpg') }}" alt="Bijoux Chevalière" class="img-fluid">
                         </div>
-                        <h4>Contribution Libre</h4>
-                        <p>Offrez-moi une contribution pour mon futur voyage ou autre projet.</p>
+                        <h4>Bijoux Chevalière</h4>
+                        <p>Un bijou élégant pour sublimer ma main.</p>
+                        <div class="amount-display">
+                            <span class="amount">50€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Bague de pied -->
+                    <div class="gift-card" data-type="bague-pied" data-amount="30" data-description="Bague de pied">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/bague-pied.jpg') }}" alt="Bague de pied" class="img-fluid">
+                        </div>
+                        <h4>Bague de Pied</h4>
+                        <p>Une touche d'élégance pour mes pieds.</p>
+                        <div class="amount-display">
+                            <span class="amount">30€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Boucle d'oreille -->
+                    <div class="gift-card" data-type="boucle-oreille" data-amount="40" data-description="Boucle d'oreille">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/boucle-oreille.jpg') }}" alt="Boucle d'oreille" class="img-fluid">
+                        </div>
+                        <h4>Boucle d'Oreille</h4>
+                        <p>Des boucles d'oreilles pour illuminer mon visage.</p>
+                        <div class="amount-display">
+                            <span class="amount">40€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Rouge à lèvre matte -->
+                    <div class="gift-card" data-type="rouge-levre" data-amount="25" data-description="Rouge à lèvre matte">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/rouge-levre.jpg') }}" alt="Rouge à lèvre matte" class="img-fluid">
+                        </div>
+                        <h4>Rouge à Lèvre Matte</h4>
+                        <p>Un maquillage intense pour mes lèvres.</p>
+                        <div class="amount-display">
+                            <span class="amount">25€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Voyage -->
+                    <div class="gift-card" data-type="voyage" data-amount="900" data-description="Voyage">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/voyage.jpg') }}" alt="Voyage" class="img-fluid">
+                        </div>
+                        <h4>Voyage</h4>
+                        <p>Une escapade pour célébrer mes 23 ans.</p>
+                        <div class="amount-display">
+                            <span class="amount">900€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Journée détente -->
+                    <div class="gift-card" data-type="detente" data-amount="100" data-description="Journée détente">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/spa.jpg') }}" alt="Journée détente" class="img-fluid">
+                        </div>
+                        <h4>Journée Détente</h4>
+                        <p>Massage spa et hôtel pour une journée de pure relaxation.</p>
+                        <div class="amount-display">
+                            <span class="amount">100€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Pochette d'ordinateur -->
+                    <div class="gift-card" data-type="pochette" data-amount="35" data-description="Pochette d'ordinateur">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/pochette.jpg') }}" alt="Pochette d'ordinateur" class="img-fluid">
+                        </div>
+                        <h4>Pochette d'Ordinateur</h4>
+                        <p>Une pochette élégante pour protéger mon ordinateur.</p>
+                        <div class="amount-display">
+                            <span class="amount">35€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Parfum -->
+                    <div class="gift-card" data-type="parfum" data-amount="65" data-description="Parfum La Vie Est Belle Élixir">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/parfum.jpg') }}" alt="Parfum La vie est belle élixir" class="img-fluid">
+                        </div>
+                        <h4>Parfum La Vie Est Belle Élixir</h4>
+                        <p>Mon parfum préféré pour une fragrance enivrante.</p>
+                        <div class="amount-display">
+                            <span class="amount">65€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Chaussures -->
+                    <div class="gift-card" data-type="chaussures" data-amount="80" data-description="Paire de chaussures">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/chaussures.jpg') }}" alt="Paire de chaussures" class="img-fluid">
+                        </div>
+                        <h4>Paire de Chaussures</h4>
+                        <p>Alhona rose fluo ou vert eau (pointure 39/40) ou carte cadeau.</p>
+                        <div class="amount-display">
+                            <span class="amount">80€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Trépied -->
+                    <div class="gift-card" data-type="trepied" data-amount="45" data-description="Trépied">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/trepied.jpg') }}" alt="Trépied" class="img-fluid">
+                        </div>
+                        <h4>Trépied</h4>
+                        <p>Un trépied stable pour mes photos et vidéos.</p>
+                        <div class="amount-display">
+                            <span class="amount">45€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Pédicure -->
+                    <div class="gift-card" data-type="pedicure" data-amount="60" data-description="Pause Pédicure">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/pedicure.jpg') }}" alt="Pédicure" class="img-fluid">
+                        </div>
+                        <h4>Pause Pédicure</h4>
+                        <p>Une séance de pédicure chez Mamk Beauty.</p>
+                        <div class="amount-display">
+                            <span class="amount">60€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Red Line -->
+                    <div class="gift-card" data-type="redline" data-amount="500" data-description="Bijou Red Line">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/redline.jpg') }}" alt="Red Line" class="img-fluid">
+                        </div>
+                        <h4>Bijou Red Line</h4>
+                        <p>Un bijou élégant de la marque Red Line.</p>
+                        <div class="amount-display">
+                            <span class="amount">500€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- New Balance -->
+                    <div class="gift-card" data-type="newbalance" data-amount="90" data-description="New Balance Rose">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/newbalance.jpg') }}" alt="New Balance rose" class="img-fluid">
+                        </div>
+                        <h4>New Balance Rose</h4>
+                        <p>Des baskets New Balance en rose.</p>
+                        <div class="amount-display">
+                            <span class="amount">90€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Cartes Cadeaux -->
+                    <div class="gift-card" data-type="cartescadeaux" data-amount="50" data-description="Cartes Cadeaux">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/cartes-cadeaux.jpg') }}" alt="Cartes cadeaux" class="img-fluid">
+                        </div>
+                        <h4>Cartes Cadeaux</h4>
+                        <p>Des cartes cadeaux pour mes magasins préférés.</p>
+                        <div class="amount-display">
+                            <span class="amount">50€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Maille Cyclone Or -->
+                    <div class="gift-card" data-type="maille" data-amount="70" data-description="Maille Cyclone Or">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/maille.jpg') }}" alt="Maille Cyclone Or" class="img-fluid">
+                        </div>
+                        <h4>Maille Cyclone Or</h4>
+                        <p>Petit diamètre - Taille S.</p>
+                        <div class="amount-display">
+                            <span class="amount">70€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Piercing au nez -->
+                    <div class="gift-card" data-type="piercing" data-amount="30" data-description="Piercing au nez">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/piercing.jpg') }}" alt="Piercing au nez" class="img-fluid">
+                        </div>
+                        <h4>Piercing au Nez</h4>
+                        <p>Un piercing élégant pour mon nez.</p>
+                        <div class="amount-display">
+                            <span class="amount">30€</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Contribution libre (dernier élément) -->
+                    <div class="gift-card gift-contribution" data-type="contribution" data-amount="20">
+                        <div class="gift-image">
+                            <img src="{{ asset('images/wishlist/contribution.jpg') }}" alt="Contribution libre" class="img-fluid">
+                        </div>
+                        <h4>Ce Que Votre Cœur Vous Permet</h4>
+                        <p>Offrez-moi une contribution pour mes projets ou rêves.</p>
                         <div class="amount-options">
                             <button class="amount-btn" data-amount="10">10€</button>
                             <button class="amount-btn" data-amount="20">20€</button>
@@ -65,92 +218,12 @@
                             <button class="amount-btn custom-amount">Autre</button>
                         </div>
                     </div>
-                    
-                    <div class="gift-card gift-bottle" data-type="bottle" data-amount="36">
-                        <div class="gift-icon">
-                            <i class="fas fa-wine-bottle"></i>
-                        </div>
-                        <h4>Martini Bellini</h4>
-                        <p>Le cocktail emblématique de la fête pour célébrer en beauté.</p>
-                        <div class="amount-display">
-                            <span class="amount">36€</span>
-                        </div>
-                    </div>
-                    
-                    <div class="gift-card gift-music" data-type="music" data-amount="0">
-                        <div class="gift-icon">
-                            <i class="fas fa-music"></i>
-                        </div>
-                        <h4>Playlist Music</h4>
-                        <p>Contribuez à la playlist parfaite pour la fête du siècle.</p>
-                        <div class="amount-display">
-                            <span class="amount">Gratuit</span>
-                        </div>
-                    </div>
-                    
-                    <div class="gift-card gift-photoshoot" data-type="photoshoot" data-amount="100">
-                        <div class="gift-icon">
-                            <i class="fas fa-camera-retro"></i>
-                        </div>
-                        <h4>Shooting Photo</h4>
-                        <p>Offrez-moi un souvenir impérissable de mes 23 ans.</p>
-                        <div class="amount-display">
-                            <span class="amount">100€</span>
-                        </div>
-                    </div>
-                    
-                    <div class="gift-card gift-project" data-type="project" data-amount="500">
-                        <div class="gift-icon">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <h4>Mes Projets</h4>
-                        <p>Soutenez mes projets créatifs et entrepreneuriaux.</p>
-                        <div class="amount-display">
-                            <span class="amount">500€</span>
-                        </div>
-                    </div>
                 </div>
                 
-                <div class="donation-progress mt-5">
-                    <h3 class="text-center mb-4">Progression du don</h3>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: 35%;">
-                            <div class="progress-fill"></div>
-                        </div>
-                        <div class="progress-stats text-center mt-2">
-                            <span class="current-amount">350€</span> / <span class="target-amount">1000€</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="recent-donations mt-5">
-                    <h3 class="text-center mb-4">Dons récents</h3>
-                    <div class="donations-list">
-    @forelse($recentDonations as $donation)
-        <div class="donation-item">
-            <div class="donation-avatar">
-                @if($donation->author_name)
-                    <span class="avatar-text">
-                        {{ strtoupper(substr($donation->author_name, 0, 1)) }}
-                    </span>
-                @else
-                    <span class="avatar-text">A</span>
-                @endif
-            </div>
-
-            <div class="donation-details">
-                <div class="donation-type">{{ $donation->type }}</div>
-                <div class="donation-amount">{{ $donation->amount }}€</div>
-                <div class="donation-date">{{ $donation->created_at->format('d/m') }}</div>
-            </div>
-        </div>
-    @empty
-        <div class="text-center py-3">
-            <p class="text-muted">Aucun don pour le moment</p>
-        </div>
-    @endforelse
-</div>
-
+                <div class="text-center mt-4">
+                    <button class="btn btn-danger btn-lg" id="direct-donation-btn">
+                        <i class="fas fa-hand-holding-usd me-2"></i>Faire un don direct
+                    </button>
                 </div>
             </div>
         </div>
@@ -191,17 +264,19 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-white">
             <div class="modal-header border-0">
-                <h5 class="modal-title">Confirmer votre don</h5>
+                <h5 class="modal-title">Confirmer votre choix</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="confirmation-details">
-                    <h6>Type de don:</h6>
+                    <h6>Type de cadeau:</h6>
                     <p id="confirmation-type"></p>
-                    <h6>Montant:</h6>
+                    <h6 id="amount-label">Montant:</h6>
                     <p id="confirmation-amount"></p>
                     <h6>Votre nom:</h6>
                     <p id="confirmation-name"></p>
+                    <h6 id="delivery-label">Mode de livraison:</h6>
+                    <p id="confirmation-delivery"></p>
                 </div>
             </div>
             <div class="modal-footer border-0">
@@ -220,15 +295,14 @@
             @csrf
             <input type="hidden" id="contribution-type" name="type" value="contribution">
             
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="name" class="form-label">Votre nom</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="email" class="form-label">Votre email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Votre nom</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Votre email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
             </div>
             
             <div class="mb-3" id="amount-container">
@@ -241,22 +315,22 @@
                 <textarea class="form-control" id="message" name="message" rows="3"></textarea>
             </div>
             
-            <!-- Options de paiement -->
+            <!-- Options de livraison/paiement -->
             <div class="payment-methods mb-4">
-                <h4>Méthode de paiement</h4>
+                <h4>Mode de livraison/paiement</h4>
                 <div class="payment-options">
                     <label class="payment-option">
                         <input type="radio" name="payment_method" value="paypal" checked>
                         <div class="payment-option-content">
                             <i class="fab fa-paypal"></i>
-                            <span>PayPal</span>
+                            <span>Payer avec PayPal</span>
                         </div>
                     </label>
                     <label class="payment-option">
-                        <input type="radio" name="payment_method" value="stripe">
+                        <input type="radio" name="payment_method" value="inperson">
                         <div class="payment-option-content">
-                            <i class="fab fa-stripe"></i>
-                            <span>Carte bancaire</span>
+                            <i class="fas fa-hand-holding-heart"></i>
+                            <span>Offrir en main propre</span>
                         </div>
                     </label>
                 </div>
@@ -265,7 +339,7 @@
             <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-outline-light" id="cancel-btn">Annuler</button>
                 <button type="submit" class="btn btn-danger" id="submit-btn">
-                    <i class="bi bi-lock me-2"></i>Payer maintenant
+                    <i class="bi bi-lock me-2"></i>Valider
                 </button>
             </div>
         </form>
@@ -290,7 +364,7 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
 </div>
 @endif
-@endsection
+
 
 <script src="https://www.paypal.com/sdk/js?client-id={{ config('paypal.' . config('paypal.mode') . '.client_id') }}&currency=EUR&intent=capture"></script>
 <script>
@@ -302,9 +376,11 @@
         const contributionType = document.getElementById('contribution-type');
         const amountContainer = document.getElementById('amount-container');
         const amountInput = document.getElementById('amount');
+        const messageInput = document.getElementById('message');
         const wishlistForm = document.getElementById('wishlist-form');
         const submitBtn = document.getElementById('submit-btn');
         const paypalContainer = document.getElementById('paypal-button-container');
+        const directDonationBtn = document.getElementById('direct-donation-btn');
         let paypalButtonsRendered = false;
         
         // Récupérer le token CSRF
@@ -339,25 +415,85 @@
                 defaultAmount: 20,
                 amounts: [10, 20, 50, 'custom']
             },
-            bottle: {
-                title: 'Offrir un Martini Bellini',
+            chevaliere: {
+                title: 'Offrir une bijoux chevalière',
                 showAmount: false,
-                defaultAmount: 36
+                defaultAmount: 50
             },
-            music: {
-                title: 'Participer à la playlist',
+            'bague-pied': {
+                title: 'Offrir une bague de pied',
                 showAmount: false,
-                defaultAmount: 0
+                defaultAmount: 30
             },
-            photoshoot: {
-                title: 'Offrir un shooting photo',
+            'boucle-oreille': {
+                title: 'Offrir une boucle d\'oreille',
+                showAmount: false,
+                defaultAmount: 40
+            },
+            'rouge-levre': {
+                title: 'Offrir un rouge à lèvre matte',
+                showAmount: false,
+                defaultAmount: 25
+            },
+            voyage: {
+                title: 'Offrir un voyage',
+                showAmount: false,
+                defaultAmount: 900
+            },
+            detente: {
+                title: 'Offrir une journée détente',
                 showAmount: false,
                 defaultAmount: 100
             },
-            project: {
-                title: 'Soutenir mes projets',
+            pochette: {
+                title: 'Offrir une pochette d\'ordinateur',
+                showAmount: false,
+                defaultAmount: 35
+            },
+            parfum: {
+                title: 'Offrir un parfum La Vie Est Belle Élixir',
+                showAmount: false,
+                defaultAmount: 65
+            },
+            chaussures: {
+                title: 'Offrir une paire de chaussures',
+                showAmount: false,
+                defaultAmount: 80
+            },
+            trepied: {
+                title: 'Offrir un trépied',
+                showAmount: false,
+                defaultAmount: 45
+            },
+            pedicure: {
+                title: 'Offrir une pause pédicure',
+                showAmount: false,
+                defaultAmount: 60
+            },
+            redline: {
+                title: 'Offrir un bijou Red Line',
                 showAmount: false,
                 defaultAmount: 500
+            },
+            newbalance: {
+                title: 'Offrir des New Balance rose',
+                showAmount: false,
+                defaultAmount: 90
+            },
+            cartescadeaux: {
+                title: 'Offrir des cartes cadeaux',
+                showAmount: false,
+                defaultAmount: 50
+            },
+            maille: {
+                title: 'Offrir une Maille Cyclone Or',
+                showAmount: false,
+                defaultAmount: 70
+            },
+            piercing: {
+                title: 'Offrir un piercing au nez',
+                showAmount: false,
+                defaultAmount: 30
             }
         };
         
@@ -366,6 +502,7 @@
             card.addEventListener('click', function() {
                 const type = this.getAttribute('data-type');
                 const config = giftConfig[type];
+                const description = this.getAttribute('data-description');
                 
                 formTitle.textContent = config.title;
                 contributionType.value = type;
@@ -383,11 +520,31 @@
                 } else {
                     amountContainer.style.display = 'none';
                     amountInput.required = false;
+                    amountInput.value = config.defaultAmount;
+                }
+                
+                // Remplir le champ message avec "Je t'offre..." si ce n'est pas une contribution
+                if (type !== 'contribution' && description) {
+                    messageInput.value = `Je t'offre ${description}`;
+                } else {
+                    messageInput.value = '';
                 }
                 
                 contributionForm.style.display = 'block';
                 contributionForm.scrollIntoView({ behavior: 'smooth' });
             });
+        });
+        
+        // Bouton pour faire un don direct
+        directDonationBtn.addEventListener('click', function() {
+            formTitle.textContent = 'Faire un don direct';
+            contributionType.value = 'contribution';
+            amountContainer.style.display = 'block';
+            amountInput.value = 20;
+            amountInput.required = true;
+            messageInput.value = '';
+            contributionForm.style.display = 'block';
+            contributionForm.scrollIntoView({ behavior: 'smooth' });
         });
         
         // Gestion des boutons de montant prédéfini
@@ -421,7 +578,7 @@
             contributionForm.style.display = 'none';
         });
         
-        // Gestion du changement de méthode de paiement
+        // Gestion du changement de méthode de paiement/livraison
         document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 if (this.value === 'paypal') {
@@ -505,7 +662,7 @@
             }).render('#paypal-button-container');
         }
         
-        // Gestion de la soumission du formulaire pour Stripe
+        // Gestion de la soumission du formulaire
         wishlistForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -527,22 +684,44 @@
             }
             
             // Afficher le modal de confirmation
-            showConfirmationModal(type, amount, name);
+            showConfirmationModal(type, amount, name, paymentMethod);
         });
         
         // Fonction pour afficher le modal de confirmation
-        function showConfirmationModal(type, amount, name) {
+        function showConfirmationModal(type, amount, name, paymentMethod) {
             const typeText = {
                 contribution: 'Contribution',
-                bottle: 'Martini Bellini',
-                music: 'Playlist Music',
-                photoshoot: 'Shooting Photo',
-                project: 'Mes Projets'
+                chevaliere: 'Bijoux Chevalière',
+                'bague-pied': 'Bague de Pied',
+                'boucle-oreille': 'Boucle d\'Oreille',
+                'rouge-levre': 'Rouge à Lèvre Matte',
+                voyage: 'Voyage',
+                detente: 'Journée Détente',
+                pochette: 'Pochette d\'Ordinateur',
+                parfum: 'Parfum La Vie Est Belle Élixir',
+                chaussures: 'Paire de Chaussures',
+                trepied: 'Trépied',
+                pedicure: 'Pause Pédicure',
+                redline: 'Bijou Red Line',
+                newbalance: 'New Balance Rose',
+                cartescadeaux: 'Cartes Cadeaux',
+                maille: 'Maille Cyclone Or',
+                piercing: 'Piercing au Nez'
             };
             
             document.getElementById('confirmation-type').textContent = typeText[type] || type;
-            document.getElementById('confirmation-amount').textContent = amount + '€';
+            document.getElementById('confirmation-amount').textContent = amount ? amount + '€' : 'N/A';
             document.getElementById('confirmation-name').textContent = name;
+            document.getElementById('confirmation-delivery').textContent = paymentMethod === 'paypal' ? 'Paiement PayPal' : 'Offrir en main propre';
+            
+            // Masquer ou afficher les étiquettes selon le type de cadeau
+            if (type === 'contribution') {
+                document.getElementById('amount-label').style.display = 'block';
+                document.getElementById('confirmation-amount').style.display = 'block';
+            } else {
+                document.getElementById('amount-label').style.display = 'none';
+                document.getElementById('confirmation-amount').style.display = 'none';
+            }
             
             const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
             confirmationModal.show();
@@ -550,31 +729,28 @@
         
         // Gestion du bouton de confirmation
         document.getElementById('confirm-donation').addEventListener('click', function() {
-            const type = document.getElementById('confirmation-type').textContent;
-            const amount = document.getElementById('confirmation-amount').textContent;
-            const name = document.getElementById('confirmation-name').textContent;
-            
-            // Fermer le modal de confirmation
-            bootstrap.Modal.getInstance(document.getElementById('confirmationModal')).hide();
-            
-            // Soumettre le formulaire
-            submitDonation();
-        });
-        
-        // Fonction pour soumettre le don
-        function submitDonation() {
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const amount = document.getElementById('amount').value;
             const message = document.getElementById('message').value;
             const type = document.getElementById('contribution-type').value;
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
             
+            // Fermer le modal de confirmation
+            bootstrap.Modal.getInstance(document.getElementById('confirmationModal')).hide();
+            
+            // Soumettre le formulaire
+            submitDonation(name, email, amount, message, type, paymentMethod);
+        });
+        
+        // Fonction pour soumettre le don
+        function submitDonation(name, email, amount, message, type, paymentMethod) {
             // Afficher un indicateur de chargement
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Chargement...';
             submitBtn.disabled = true;
             
-            // Envoyer la requête au serveur pour Stripe
+            // Envoyer la requête au serveur
             fetch('{{ route("wishlist.store") }}', {
                 method: 'POST',
                 headers: {
@@ -587,7 +763,7 @@
                     amount: amount,
                     message: message,
                     type: type,
-                    payment_method: 'stripe'
+                    payment_method: paymentMethod
                 })
             })
             .then(response => {
@@ -600,8 +776,29 @@
             })
             .then(data => {
                 if (data.success) {
-                    // Rediriger vers Stripe Checkout
-                    window.location.href = data.redirect_url;
+                    // Afficher un message de succès
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'alert alert-success alert-dismissible fade show';
+                    successDiv.innerHTML = `
+                        Merci ${name}! Votre choix a bien été enregistré.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    
+                    const container = document.querySelector('.wishlist-container');
+                    container.insertBefore(successDiv, container.firstChild);
+                    
+                    // Masquer le formulaire
+                    contributionForm.style.display = 'none';
+                    
+                    // Réinitialiser le formulaire
+                    wishlistForm.reset();
+                    
+                    // Masquer après 5 secondes
+                    setTimeout(() => {
+                        if (successDiv.parentNode) {
+                            successDiv.parentNode.removeChild(successDiv);
+                        }
+                    }, 5000);
                 } else {
                     showError('Erreur: ' + data.message);
                 }
@@ -618,7 +815,6 @@
         }
     });
 </script>
-@endsection
 
 @push('styles')
 <style>
@@ -688,7 +884,7 @@
 .hero-image img {
     width: 100%;
     height: auto;
-    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3);
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
     border-radius: 10px;
     transform: rotate(5deg);
 }
@@ -726,8 +922,8 @@
 .gifts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    margin-bottom: 30px;
+    gap: 35px; /* Augmenté l'espacement entre les cartes */
+    margin-bottom: 40px; /* Plus d'espace en bas */
 }
 
 .gift-card {
@@ -735,7 +931,7 @@
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    padding: 30px;
+    padding: 25px; /* Plus de padding interne */
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -769,34 +965,39 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
-.gift-icon {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    color: var(--peach);
+.gift-image {
+    width: 100%;
+    height: 160px; /* Légèrement plus grand */
+    overflow: hidden;
+    border-radius: 15px;
+    margin-bottom: 20px; /* Plus d'espace en bas */
     z-index: 2;
     position: relative;
+    border: 3px solid rgba(255, 182, 193, 0.6);
+    box-shadow: 0 0 15px rgba(255, 182, 193, 0.4);
+    transition: all 0.3s ease;
 }
 
-.gift-bottle .gift-icon {
-    color: var(--rose);
+.gift-image:hover {
+    border-color: rgba(255, 182, 193, 0.9);
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.6);
 }
 
-.gift-music .gift-icon {
-    color: var(--light-peach);
+.gift-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
-.gift-photoshoot .gift-icon {
-    color: var(--light-rose);
-}
-
-.gift-project .gift-icon {
-    color: var(--light-peach);
+.gift-card:hover .gift-image img {
+    transform: scale(1.05);
 }
 
 .gift-card h4 {
     font-family: 'Unbounded', cursive;
-    font-size: 1.5rem;
-    margin-bottom: 15px;
+    font-size: 1.3rem; /* Légèrement plus grand */
+    margin-bottom: 15px; /* Plus d'espace en bas */
     color: white;
     z-index: 2;
     position: relative;
@@ -804,25 +1005,29 @@
 
 .gift-card p {
     color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 0;
+    margin-bottom: 20px; /* Plus d'espace en bas */
+    font-size: 0.95rem; /* Légèrement plus grand */
+    line-height: 1.5; /* Meilleure lisibilité */
     z-index: 2;
     position: relative;
+    flex-grow: 1;
 }
 
 .amount-options {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 12px; /* Plus d'espace entre les boutons */
+    margin-top: auto;
+    flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
 }
 
 .amount-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    padding: 5px 15px;
+    padding: 8px 18px; /* Plus grand */
     color: white;
-    font-size: 0.9rem;
+    font-size: 0.95rem; /* Légèrement plus grand */
     transition: all 0.2s ease;
 }
 
@@ -835,9 +1040,9 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    padding: 5px 15px;
+    padding: 8px 18px; /* Plus grand */
     color: white;
-    font-size: 0.9rem;
+    font-size: 0.95rem; /* Légèrement plus grand */
     transition: all 0.2s ease;
 }
 
@@ -849,117 +1054,15 @@
 .amount-display {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    padding: 8px 15px;
-    margin-top: 15px;
+    padding: 10px 18px; /* Plus grand */
+    margin-top: auto;
     text-align: center;
 }
 
 .amount {
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* Légèrement plus grand */
     font-weight: 700;
     font-family: 'Unbounded', cursive;
-}
-
-/* Progress Bar */
-.donation-progress {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 20px;
-    margin-top: 30px;
-}
-
-.progress-container {
-    position: relative;
-    height: 20px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--peach), var(--rose), var(--red));
-    width: 35%;
-    border-radius: 10px;
-    transition: width 0.5s ease;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--peach), var(--rose), var(--red));
-    width: 35%;
-    border-radius: 10px;
-}
-
-.progress-stats {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    font-weight: 600;
-}
-
-/* Recent Donations */
-.recent-donations {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 20px;
-}
-
-.donations-list {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.donation-item {
-    display: flex;
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.donation-item:last-child {
-    border-bottom: none;
-}
-
-.donation-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--rose);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    margin-right: 15px;
-}
-
-.avatar-text {
-    font-family: 'Unbounded', cursive;
-    font-size: 0.9rem;
-}
-
-.donation-details {
-    flex: 1;
-}
-
-.donation-type {
-    font-family: 'Unbounded', cursive;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    color: var(--peach);
-    margin-bottom: 5px;
-}
-
-.donation-amount {
-    font-weight: 700;
-    color: white;
-    font-size: 1.1rem;
-}
-
-.donation-date {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Form Styles */
@@ -971,9 +1074,10 @@
 }
 
 .form-control {
-    background: rgba(255, 255, : 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--glass-border);
     color: white;
+    width: 100%;
 }
 
 .form-control:focus {
@@ -1055,10 +1159,25 @@
     filter: invert(1);
 }
 
+/* Direct Donation Button */
+#direct-donation-btn {
+    margin-top: 20px;
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+#direct-donation-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
 /* Responsive */
 @media (max-width: 991px) {
     .gifts-grid {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px; /* Maintenir un bon espacement sur tablette */
     }
     
     .hero-content {
@@ -1074,7 +1193,7 @@
 @media (max-width: 768px) {
     .wishlist-container {
         margin-top: -30px;
-        padding: 30px;
+        padding: 30px 20px;
     }
     
     .hero-stats {
@@ -1084,6 +1203,60 @@
     
     .stat-number {
         font-size: 2rem;
+    }
+    
+    .gift-card {
+        padding: 20px;
+    }
+    
+    .gift-image {
+        height: 140px;
+    }
+    
+    .contribution-form {
+        padding: 20px;
+    }
+    
+    .payment-options {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .payment-option-content {
+        padding: 12px;
+    }
+    
+    .gifts-grid {
+        gap: 25px; /* Espacement réduit pour mobile mais toujours suffisant */
+    }
+}
+
+@media (max-width: 576px) {
+    .gifts-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .gift-image {
+        height: 180px;
+    }
+    
+    .wishlist-container {
+        padding: 20px 15px;
+    }
+    
+    .contribution-form {
+        padding: 15px;
+    }
+    
+    .amount-options {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .amount-btn {
+        font-size: 0.8rem;
+        padding: 6px 14px; /* Ajusté pour mobile */
     }
 }
 </style>

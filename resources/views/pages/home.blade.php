@@ -40,7 +40,7 @@
         <!-- Bouteilles au-dessus de "Jade Présente" -->
         <div class="bottles-top-container d-flex justify-content-center mb-3" data-aos="fade-down" data-aos-delay="100">
             <div class="bottle-container mx-3">
-                <img src="{{ asset('images/bellini.png') }}" alt="Bellini" class="img-fluid bottle-image">
+                <img src="{{ asset('images/lolo.png') }}" alt="Lolo" class="img-fluid bottle-image">
             </div>
             
         </div>
@@ -60,9 +60,9 @@
         
         <!-- Conteneur pour le titre avec les images de chaque côté -->
         <div class="title-container" data-aos="zoom-in" data-aos-delay="400">
-            <!-- Image Bellini à gauche -->
+            <!-- Logo à la place de l'image Bellini -->
             <div class="title-side-image title-left-image">
-                <img src="{{ asset('images/logo.png') }}" alt="Bellini" class="img-fluid">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid">
             </div>
             
             <!-- Titre au centre -->
@@ -152,13 +152,8 @@
                         
                         <div class="d-flex justify-content-center justify-content-md-start gap-3">
                             <div class="time-info text-center">
-                                <h4 class="mb-0 fw-bold">15h</h4>
+                                <h4 class="mb-0 fw-bold">14h</h4>
                                 <small class="text-uppercase opacity-75">Start</small>
-                            </div>
-                            <div class="vr"></div>
-                            <div class="time-info text-center">
-                                <h4 class="mb-0 fw-bold">21h</h4>
-                                <small class="text-uppercase opacity-75">End</small>
                             </div>
                         </div>
                     </div>
@@ -207,7 +202,7 @@
                         <i class="fas fa-ticket-simple"></i>
                     </div>
                     <h4>Billetterie</h4>
-                    <p>Prends ta place. Nominatif avec QR Code.</p>
+                    <p>Prends ta place.</p>
                     <div class="card-arrow">
                         <i class="fas fa-arrow-right"></i>
                     </div>
@@ -236,7 +231,7 @@
                     <div class="card-icon">
                         <i class="fas fa-clapperboard"></i>
                     </div>
-                    <h4>Live Snaps</h4>
+                    <h4>Gallerie</h4>
                     <p>Partagez vos photos & vidéos en live.</p>
                     <div class="card-arrow">
                         <i class="fas fa-arrow-right"></i>
@@ -270,13 +265,16 @@
                 <div class="row">
                     <div class="col-lg-8 mx-auto">
                         <div class="wall-form mb-4">
-                            <form id="message-form" class="d-flex flex-column gap-3">
-                                <input type="text" class="form-control" id="author-name" placeholder="Ton nom" required>
-                                <textarea class="form-control" id="message-content" rows="3" placeholder="Laisse moi un petit mot 💓" required></textarea>
-                                <button type="submit" class="btn btn-light btn-lg">
-                                    <i class="fas fa-paper-plane me-2"></i>Envoyer mon message
-                                </button>
-                            </form>
+                            <div class="wall-form mb-4">
+    <form id="message-form" class="d-flex flex-column gap-3">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <input type="text" class="form-control" id="author-name" placeholder="Ton nom" required>
+        <textarea class="form-control" id="message-content" rows="3" placeholder="Laisse moi un petit mot 💓" required></textarea>
+        <button type="submit" class="btn btn-light btn-lg">
+            <i class="fas fa-paper-plane me-2"></i>Envoyer mon message
+        </button>
+    </form>
+</div>
                         </div>
                         <div id="message-wall" class="message-wall">
                             <!-- Les messages seront chargés ici via JavaScript -->
@@ -316,78 +314,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialiser les particules
-        particlesJS('particles-js', {
-            particles: {
-                number: {
-                    value: 80,
-                    density: {
-                        enable: true,
-                        value_area: 800
-                    }
-                },
-                color: {
-                    value: '#ffffff'
-                },
-                shape: {
-                    type: 'circle'
-                },
-                opacity: {
-                    value: 0.5,
-                    random: false
-                },
-                size: {
-                    value: 3,
-                    random: true
-                },
-                line_linked: {
-                    enable: true,
-                    distance: 150,
-                    color: '#ffffff',
-                    opacity: 0.4,
-                    width: 1
-                },
-                move: {
-                    enable: true,
-                    speed: 2,
-                    direction: 'none',
-                    random: false,
-                    straight: false,
-                    out_mode: 'out',
-                    bounce: false
-                }
-            },
-            interactivity: {
-                detect_on: 'canvas',
-                events: {
-                    onhover: {
-                        enable: true,
-                        mode: 'grab'
-                    },
-                    onclick: {
-                        enable: true,
-                        mode: 'push'
-                    },
-                    resize: true
-                },
-                modes: {
-                    grab: {
-                        distance: 140,
-                        line_linked: {
-                            opacity: 1
-                        }
-                    },
-                    push: {
-                        particles_nb: 4
-                    }
-                }
-            },
-            retina_detect: true
-        });
-        
-        // Compte à rebours - Correction de la date pour 15h au lieu de 21h
+        // Compte à rebours - Correction pour 14h au lieu de 15h
         function updateCountdown() {
-            const eventDate = new Date('March 14, 2026 15:00:00').getTime(); // Changé de 21:00 à 15:00
+            // Date cible : 14 mars 2026 à 14h00 (format ISO pour éviter les problèmes de fuseau horaire)
+            const eventDate = new Date('2026-03-14T14:00:00').getTime();
             const now = new Date().getTime();
             const distance = eventDate - now;
             
@@ -407,6 +337,7 @@
             document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
         }
         
+        // Lancer le compte à rebours et mettre à jour chaque seconde
         updateCountdown();
         setInterval(updateCountdown, 1000);
         
@@ -414,64 +345,98 @@
         loadMessages();
         
         // Gérer la soumission du formulaire
-        document.getElementById('message-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const authorName = document.getElementById('author-name').value;
-            const content = document.getElementById('message-content').value;
-            
-            // Envoyer le message via AJAX
-            fetch('/api/messages', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    author_name: authorName,
-                    content: content
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Ajouter le nouveau message au mur
-                addMessageToWall(data);
-                
-                // Réinitialiser le formulaire
-                document.getElementById('author-name').value = '';
-                document.getElementById('message-content').value = '';
-                
-                // Afficher une notification de succès
-                showNotification('Message envoyé avec succès !', 'success');
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
-            });
-        });
+// Gérer la soumission du formulaire
+document.getElementById('message-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const authorName = document.getElementById('author-name').value;
+    const content = document.getElementById('message-content').value;
+    
+    // Récupérer le token CSRF depuis le champ hidden
+    const csrfToken = document.querySelector('input[name="_token"]').value;
+    
+    // Afficher un indicateur de chargement
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Envoi en cours...';
+    submitButton.disabled = true;
+    
+    // Envoyer le message via AJAX
+    fetch('/api/messages', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            author_name: authorName,
+            content: content,
+            _token: csrfToken
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erreur réseau: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Ajouter le nouveau message au mur
+        addMessageToWall(data);
         
+        // Réinitialiser le formulaire
+        document.getElementById('author-name').value = '';
+        document.getElementById('message-content').value = '';
+        
+        // Afficher une notification de succès
+        showNotification('Message envoyé avec succès !', 'success');
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
+    })
+    .finally(() => {
+        // Restaurer le bouton
+        submitButton.innerHTML = originalText;
+        submitButton.disabled = false;
+    });
+});
         // Fonction pour charger les messages
         function loadMessages() {
-            fetch('/api/messages')
-                .then(response => response.json())
-                .then(messages => {
-                    const messageWall = document.getElementById('message-wall');
-                    messageWall.innerHTML = '';
-                    
-                    if (messages.length === 0) {
-                        messageWall.innerHTML = '<p class="text-center">Soyez le premier à laisser un message !</p>';
-                        return;
-                    }
-                    
-                    messages.forEach(message => {
-                        addMessageToWall(message);
+            const messageWall = document.getElementById('message-wall');
+            messageWall.innerHTML = '<div class="text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Chargement...</span></div></div>';
+            
+            try {
+                fetch('/api/messages')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur réseau: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(messages => {
+                        messageWall.innerHTML = '';
+                        
+                        if (messages.length === 0) {
+                            messageWall.innerHTML = '<p class="text-center">Soyez le premier à laisser un message !</p>';
+                            return;
+                        }
+                        
+                        messages.forEach(message => {
+                            addMessageToWall(message);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors du chargement des messages:', error);
+                        messageWall.innerHTML = '<p class="text-center">Une erreur est survenue lors du chargement des messages.</p>';
                     });
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    document.getElementById('message-wall').innerHTML = '<p class="text-center">Impossible de charger les messages.</p>';
-                });
+            } catch (error) {
+                console.error('Erreur:', error);
+                messageWall.innerHTML = '<p class="text-center">Une erreur est survenue lors du chargement des messages.</p>';
+            }
         }
+        
         
         // Fonction pour ajouter un message au mur
         function addMessageToWall(message) {
@@ -533,38 +498,18 @@
                 notification.remove();
             }, 3000);
         }
-        
-        // Animation des particules
-        const particles = document.querySelectorAll('.particle');
-        
-        particles.forEach((particle, index) => {
-            // Taille aléatoire
-            const size = Math.random() * 10 + 5;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            
-            // Position de départ aléatoire
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-            
-            // Animation de flottement
-            const duration = Math.random() * 20 + 10;
-            const delay = Math.random() * 5;
-            
-            particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
-        });
-    });
 
-    // Correction du scroll pour le bouton Découvrir
-    document.querySelector('a[href="#content"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const target = document.querySelector('#content');
-        const headerHeight = window.innerWidth <= 767 ? 150 : 100; // Plus d'espace sur mobile
-        
-        window.scrollTo({
-            top: target.offsetTop - headerHeight,
-            behavior: 'smooth'
+        // Correction du scroll pour le bouton Découvrir
+        document.querySelector('a[href="#content"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const target = document.querySelector('#content');
+            const headerHeight = window.innerWidth <= 767 ? 150 : 100; // Plus d'espace sur mobile
+            
+            window.scrollTo({
+                top: target.offsetTop - headerHeight,
+                behavior: 'smooth'
+            });
         });
     });
 </script>
@@ -637,6 +582,13 @@
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 15px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Animation pour les nouveaux messages */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Styles pour le footer */
@@ -650,11 +602,48 @@
     height: auto;
 }
 
+/* Styles pour le compte à rebours en mobile */
+@media (max-width: 767px) {
+    .countdown-container {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        margin-top: 30px !important;
+        margin-bottom: 30px !important;
+    }
+    
+    .countdown {
+        display: flex !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+    
+    .countdown-item {
+        min-width: 60px !important;
+        padding: 10px !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-radius: 10px !important;
+        margin: 5px !important;
+    }
+    
+    .countdown-number {
+        font-size: 1.5rem !important;
+        display: block !important;
+    }
+    
+    .countdown-label {
+        font-size: 0.8rem !important;
+        display: block !important;
+    }
+}
+
 /* Responsive styles */
 @media (max-width: 767px) {
     .logo-container {
         top: 10px;
         left: 10px;
+        z-index: 10; /* Assurer que le logo reste visible */
     }
     
     .logo-header {
@@ -671,14 +660,29 @@
     
     .title-container {
         flex-direction: column;
+        align-items: center;
     }
     
-    .title-side-image {
+    /* Correction pour afficher le logo sur mobile */
+    .title-side-image.title-left-image {
+        display: block !important;
+        position: relative;
+        margin-bottom: 15px;
+        transform: none !important;
+    }
+    
+    .title-side-image.title-left-image img {
+        max-width: 100px;
+        height: auto;
+    }
+    
+    .title-side-image.title-right-image {
         display: none;
     }
     
     .festival-title {
         font-size: 2.5rem;
+        text-align: center;
     }
     
     .card-tile {
@@ -699,9 +703,8 @@
     .card-tile {
         min-height: 150px;
     }
-    
-   
 }
+
 /* Bouteilles générales */
 .bottle-container {
     width: 280px;   /* TAILLE RÉELLE */
@@ -774,6 +777,26 @@
     transform: rotate(-6deg);
 }
 
+/* Positionnement du logo à gauche du titre */
+.title-left-image img {
+    max-width: 120px;
+    height: auto;
+    object-fit: contain;
+}
 
+/* Ajustement pour le logo à gauche du titre */
+@media (max-width: 767px) {
+    .title-left-image {
+        display: block !important; /* Forcer l'affichage du logo sur mobile */
+        position: relative;
+        margin-bottom: 15px;
+        transform: none !important;
+    }
+    
+    .title-left-image img {
+        max-width: 100px;
+        height: auto;
+    }
+}
 </style>
 @endsection

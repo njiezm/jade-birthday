@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\GalleryController;
-use App\Http\Controllers\TicketController; // Assurez-vous que cette ligne est présente
+use App\Http\Controllers\TicketController; 
+use App\Http\Controllers\MessageController;
 
 // Page d'accueil
 Route::get('/', fn() => view('pages.home'))->name('home');
@@ -26,6 +27,18 @@ Route::get('/payment/cancel/{reference}', [PaymentController::class, 'cancel'])-
 Route::get('/stripe/success/{reference}', [PaymentController::class, 'stripeSuccess'])->name('stripe.success');
 Route::get('/stripe/cancel/{reference}', [PaymentController::class, 'stripeCancel'])->name('stripe.cancel');
 Route::get('/paiement/success/{reference}', [PaymentController::class, 'paymentSuccess'])->name('paiement.success');
+
+
+
+
+// Page du formulaire de billetterie
+Route::get('/billetterie', [PaymentController::class, 'showForm'])->name('billetterie');
+
+// Route qui reçoit le formulaire et redirige vers Stripe
+Route::post('/payment/redirect', [PaymentController::class, 'redirectToPayment'])->name('payment.redirect');
+
+// Page de succès après paiement (vers où Stripe redirige le client)
+Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
 
 // Routes pour les billets
 Route::get('/ticket/validate/{reference}/{id}', [TicketController::class, 'validate'])->name('ticket.validate');

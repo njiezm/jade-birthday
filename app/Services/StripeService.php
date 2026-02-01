@@ -4,85 +4,57 @@ namespace App\Services;
 
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
-use Illuminate\Support\Facades\Log;
-use Exception;
+use Stripe\PaymentIntent;
+use Stripe\Webhook;
 
 class StripeService
 {
     public function __construct()
     {
-        // Récupérer la clé secrète depuis la configuration
-        $secretKey = config('services.stripe.secret');
-        
-        // Journaliser la clé pour le débogage (masquez la plupart des caractères pour la sécurité)
-        if ($secretKey) {
-            $maskedKey = substr($secretKey, 0, 8) . '...' . substr($secretKey, -4);
-            Log::info('Stripe secret key found', ['key' => $maskedKey]);
-        } else {
-            Log::error('Stripe secret key is missing from config');
-            throw new Exception('La clé secrète Stripe n\'est pas configurée. Veuillez vérifier votre fichier .env et config/services.php');
-        }
-        
-        Stripe::setApiKey($secretKey);
+        // Configuration de la clé API Stripe
+        Stripe::setApiKey(config('services.stripe.secret'));
     }
     
-    public function createCheckoutSession($amount, $email, $successUrl, $cancelUrl, $metadata = [])
+    public function createCheckoutSession($amount, $currency, $email, $successUrl, $cancelUrl)
     {
-        try {
-            Log::info('Creating Stripe session', ['amount' => $amount, 'email' => $email]);
-            
-            $session = Session::create([
-                'payment_method_types' => ['card'],
-                'customer_email' => $email,
-                'line_items' => [
-                    [
-                        'price_data' => [
-                            'currency' => 'eur',
-                            'product_data' => [
-                                'name' => 'Billet pour THE 23 BELLINI FEST',
-                                'description' => 'Billet d\'entrée pour le festival',
-                            ],
-                            'unit_amount' => $amount * 100, // Stripe utilise les centimes
-                        ],
-                        'quantity' => 1,
+        return Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => $currency,
+                    'product_data' => [
+                        'name' => 'Billet THE 23 BELLINI FEST',
+                        'description' => '14 Mars 2026 - Plan Bateau de Folie',
                     ],
+                    'unit_amount' => $amount,
                 ],
-                'mode' => 'payment',
-                'success_url' => $successUrl,
-                'cancel_url' => $cancelUrl,
-                'metadata' => $metadata,
-            ]);
-            
-            Log::info('Stripe session created successfully', ['session_id' => $session->id]);
-            
-            return $session;
-            
-        } catch (Exception $e) {
-            Log::error('Error creating Stripe session', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            throw new Exception('Erreur lors de la création de la session Stripe: ' . $e->getMessage());
-        }
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'customer_email' => $email,
+            'success_url' => $successUrl,
+            'cancel_url' => $cancelUrl,
+        ]);
     }
     
-    public function retrieveSession($sessionId)
+    public function getCheckoutSession($sessionId)
     {
-        try {
-            Log::info('Retrieving Stripe session', ['session_id' => $sessionId]);
-            
-            $session = Session::retrieve($sessionId);
-            
-            Log::info('Stripe session retrieved', ['status' => $session->payment_status]);
-            
-            return $session;
-            
-        } catch (Exception $e) {
-            Log::error('Error retrieving Stripe session', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            throw new Exception('Erreur lors de la récupération de la session Stripe: ' . $e->getMessage());
-        }
+        return Session::retrieve($sessionId);
+    }
+    
+    public function createPaymentIntent($amount, $currency, $metadata = [])
+    {
+        return PaymentIntent::create([
+            'amount' => $amount,
+            'currency' => $currency,
+            'metadata' => $metadata,
+            'payment_method_types' => ['card'],
+        ]);
+    }
+    
+    public function constructWebhookEvent($payload, $sigHeader)
+    {
+        $webhookSecret = config('services.stripe.webhook_secret');
+        return Webhook::constructEvent($payload, $sigHeader, $webhookSecret);
     }
 }

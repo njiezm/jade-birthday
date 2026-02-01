@@ -20,35 +20,36 @@
     
     <div class="upload-section mb-5">
         <div class="upload-container">
-            <h3 class="text-center mb-4">Ajoutez votre photo</h3>
+            <h3 class="text-center mb-4">Ajoutez votre photo ou vidéo</h3>
             <form action="{{ route('galerie.store') }}" method="POST" enctype="multipart/form-data" id="upload-form">
                 @csrf
                 <div class="upload-options mb-4 text-center">
-                    <button type="button" class="btn btn-outline-light mx-2" id="camera-btn">
+                    <button type="button" class="btn btn-outline-light mx-2" id="photo-btn">
                         <i class="fas fa-camera me-2"></i>Prendre une photo
                     </button>
+                    <button type="button" class="btn btn-outline-light mx-2" id="video-btn">
+                        <i class="fas fa-video me-2"></i>Enregistrer une vidéo
+                    </button>
                     <button type="button" class="btn btn-outline-light mx-2" id="browse-btn">
-                        <i class="fas fa-image me-2"></i>Choisir une photo
+                        <i class="fas fa-image me-2"></i>Choisir depuis la galerie
                     </button>
                 </div>
                 
                 <div class="upload-area" id="upload-area">
                     <div class="upload-content">
                         <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
-                        <p>Glissez-déposez votre photo ici</p>
-                        <input type="file" id="image-input" name="image" accept="image/*" style="display: none;" required>
-                        <input type="file" id="camera-input" name="image" accept="image/*" capture="camera" style="display: none;" required>
-                        <video id="camera-preview" style="display: none; width: 100%; max-height: 300px;"></video>
-                        <canvas id="camera-canvas" style="display: none;"></canvas>
+                        <p>Glissez-déposez votre photo ou vidéo ici</p>
+                        <input type="file" id="image-input" name="media" accept="image/*" style="display: none;">
+                        <input type="file" id="video-input" name="media" accept="video/*" style="display: none;">
+                        <input type="file" id="camera-input" name="media" accept="image/*" capture="camera" style="display: none;">
+                        <video id="video-preview" style="display: none; width: 100%; max-height: 300px;" controls></video>
+                        <input type="hidden" id="media-type" name="media_type" value="image">
                     </div>
                     <div class="preview-container" id="preview-container" style="display: none;">
                         <img id="image-preview" src="" alt="Preview">
                         <div class="preview-actions">
                             <button type="button" class="btn btn-danger btn-sm" id="remove-preview">
                                 <i class="fas fa-times"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-light btn-sm" id="retake-photo" style="display: none;">
-                                <i class="fas fa-redo"></i> Reprendre
                             </button>
                         </div>
                     </div>
@@ -91,26 +92,39 @@
         <h3 class="text-center mb-4">Moments du Festival</h3>
         
         <div class="gallery-grid" id="gallery-grid">
-            @forelse($images as $galleryImage)
-            <div class="gallery-item" data-id="{{ $galleryImage->id }}">
-                <div class="gallery-img-container">
-                    <img src="{{ Storage::url($galleryImage->image_path) }}" alt="Festival moment" class="gallery-img">
+            @forelse($media as $mediaItem)
+            <div class="gallery-item" data-id="{{ $mediaItem->id }}">
+                <div class="gallery-media-container">
+                    @if($mediaItem->is_video)
+                    <video class="gallery-video" poster="{{ $mediaItem->thumbnail_url }}" preload="metadata">
+                        <source src="{{ $mediaItem->media_url }}" type="video/mp4">
+                        Votre navigateur ne supporte pas les vidéos HTML5.
+                    </video>
+                    <div class="video-play-btn">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    @else
+                    <img src="{{ $mediaItem->thumbnail_url }}" alt="Festival moment" class="gallery-img">
+                    @endif
                     <div class="gallery-overlay">
                         <div class="gallery-info">
-                            <h5>{{ $galleryImage->author_name ?? 'Anonyme' }}</h5>
-                            <p class="caption">{{ $galleryImage->caption ?? '' }}</p>
-                            <p>{{ $galleryImage->created_at->format('d/m/Y H:i') }}</p>
+                            <h5>{{ $mediaItem->author_name ?? 'Anonyme' }}</h5>
+                            <p class="caption">{{ $mediaItem->caption ?? '' }}</p>
+                            <p>{{ $mediaItem->created_at->format('d/m/Y H:i') }}</p>
                         </div>
                         <div class="gallery-actions">
                             <button class="btn btn-sm btn-outline-light share-btn" 
-                                    data-image="{{ Storage::url($galleryImage->image_path) }}" 
-                                    data-caption="{{ $galleryImage->caption ?? 'Découvrez ce moment incroyable du festival!' }}"
-                                    data-id="{{ $galleryImage->id }}">
+                                    data-media="{{ $mediaItem->media_url }}" 
+                                    data-thumbnail="{{ $mediaItem->thumbnail_url }}"
+                                    data-caption="{{ $mediaItem->caption ?? 'Découvrez ce moment incroyable du festival!' }}"
+                                    data-id="{{ $mediaItem->id }}"
+                                    data-type="{{ $mediaItem->media_type }}">
                                 <i class="fas fa-share-alt"></i>
                             </button>
                             <button class="btn btn-sm btn-outline-light download-btn" 
-                                    data-image="{{ Storage::url($galleryImage->image_path) }}"
-                                    data-filename="jade-birthday-{{ $galleryImage->id }}.jpg">
+                                    data-media="{{ $mediaItem->media_url }}"
+                                    data-filename="jade-birthday-{{ $mediaItem->id }}.{{ $mediaItem->is_video ? 'mp4' : 'jpg' }}"
+                                    data-type="{{ $mediaItem->media_type }}">
                                 <i class="fas fa-download"></i>
                             </button>
                         </div>
@@ -120,7 +134,7 @@
             @empty
             <div class="empty-gallery text-center py-5">
                 <i class="fas fa-images fa-4x mb-3"></i>
-                <h4>Aucune photo pour le moment</h4>
+                <h4>Aucun média pour le moment</h4>
                 <p>Soyez le premier à partager un moment du festival!</p>
             </div>
             @endforelse
@@ -128,8 +142,8 @@
     </div>
 </div>
 
-<!-- Modal pour afficher l'image en grand -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+<!-- Modal pour afficher l'image/vidéo en grand -->
+<div class="modal fade" id="mediaModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content bg-dark text-white">
             <div class="modal-header border-0">
@@ -137,7 +151,9 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
-                <img id="modal-image" src="" alt="Festival moment" class="w-100%">
+                <div id="modal-media-container">
+                    <!-- Le média sera inséré ici dynamiquement -->
+                </div>
             </div>
             <div class="modal-footer border-0">
                 <p class="text-white" id="modal-caption"></p>
@@ -154,7 +170,7 @@
                     <button class="btn btn-outline-light btn-sm share-snapchat" id="modal-share-snapchat">
                         <i class="fab fa-snapchat-ghost"></i>
                     </button>
-                    <button class="btn btn-outline-light btn-sm download-image" id="modal-download-image">
+                    <button class="btn btn-outline-light btn-sm download-media" id="modal-download-media">
                         <i class="fas fa-download"></i>
                     </button>
                 </div>
@@ -172,8 +188,10 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="preview-image-container mb-3">
-                    <img id="share-preview-image" src="" alt="Preview" class="img-fluid rounded">
+                <div class="preview-media-container mb-3">
+                    <div id="share-preview-media">
+                        <!-- Le média sera inséré ici dynamiquement -->
+                    </div>
                 </div>
                 <div class="social-share text-center">
                     <button class="btn btn-outline-light btn-lg m-2 share-instagram" id="share-instagram">
@@ -219,20 +237,21 @@
         // Variables globales
         const uploadArea = document.getElementById('upload-area');
         const browseBtn = document.getElementById('browse-btn');
-        const cameraBtn = document.getElementById('camera-btn');
+        const photoBtn = document.getElementById('photo-btn');
+        const videoBtn = document.getElementById('video-btn');
         const imageInput = document.getElementById('image-input');
+        const videoInput = document.getElementById('video-input');
         const cameraInput = document.getElementById('camera-input');
         const previewContainer = document.getElementById('preview-container');
         const imagePreview = document.getElementById('image-preview');
-        const cameraPreview = document.getElementById('camera-preview');
-        const cameraCanvas = document.getElementById('camera-canvas');
+        const videoPreview = document.getElementById('video-preview');
         const removePreview = document.getElementById('remove-preview');
-        const retakePhoto = document.getElementById('retake-photo');
         const submitBtn = document.getElementById('submit-btn');
         const uploadForm = document.getElementById('upload-form');
-        let stream = null;
-        let currentImageType = null; // 'file' ou 'camera'
-        let currentImageData = null; // Pour stocker les données de l'image
+        const mediaTypeInput = document.getElementById('media-type');
+        
+        let currentMediaType = null; // 'image' ou 'video'
+        let currentMediaFile = null; // Pour stocker le fichier média
         
         // Fonction pour afficher une notification
         function showNotification(message, type = 'success') {
@@ -258,134 +277,48 @@
         
         // Gestion des boutons d'upload
         browseBtn.addEventListener('click', function() {
-            currentImageType = 'file';
-            imageInput.click();
+            currentMediaType = 'file';
+            // Ouvrir le dialogue de sélection de fichier
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*,video/*';
+            fileInput.addEventListener('change', function() {
+                if (this.files.length) {
+                    handleFile(this.files[0]);
+                }
+            });
+            fileInput.click();
         });
         
-        cameraBtn.addEventListener('click', function() {
-            currentImageType = 'camera';
+        // Le bouton "Prendre une photo" ouvre l'appareil photo
+        photoBtn.addEventListener('click', function() {
+            currentMediaType = 'camera';
+            mediaTypeInput.value = 'image';
             cameraInput.click();
         });
         
-        // Gestion de l'input de la caméra
-        cameraInput.addEventListener('change', function() {
+        videoBtn.addEventListener('click', function() {
+            currentMediaType = 'video';
+            mediaTypeInput.value = 'video';
+            videoInput.click();
+        });
+        
+        // Gestion de l'input d'image
+        imageInput.addEventListener('change', function() {
             if (this.files.length) {
-                startCamera();
+                handleFile(this.files[0]);
             }
         });
         
-        // Fonction pour démarrer la caméra
-        async function startCamera() {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    } 
-                });
-                
-                cameraPreview.srcObject = stream;
-                cameraPreview.style.display = 'block';
-                uploadArea.querySelector('.upload-content').style.display = 'none';
-                
-                // Ajouter le bouton pour prendre la photo
-                const takePhotoBtn = document.createElement('button');
-                takePhotoBtn.className = 'btn btn-danger mt-3';
-                takePhotoBtn.innerHTML = '<i class="fas fa-camera me-2"></i>Prendre la photo';
-                takePhotoBtn.addEventListener('click', takePhoto);
-                
-                // Ajouter le bouton pour basculer entre les caméras
-                const switchCameraBtn = document.createElement('button');
-                switchCameraBtn.className = 'btn btn-outline-light mt-2';
-                switchCameraBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Changer de caméra';
-                switchCameraBtn.addEventListener('click', switchCamera);
-                
-                // Vider le conteneur et ajouter les nouveaux boutons
-                const controlsContainer = document.createElement('div');
-                controlsContainer.className = 'camera-controls text-center';
-                controlsContainer.appendChild(takePhotoBtn);
-                controlsContainer.appendChild(switchCameraBtn);
-                
-                // Remplacer le contenu de l'upload-area
-                uploadArea.innerHTML = '';
-                uploadArea.appendChild(cameraPreview);
-                uploadArea.appendChild(controlsContainer);
-                
-                submitBtn.disabled = false;
-            } catch (err) {
-                console.error("Erreur d'accès à la caméra:", err);
-                showNotification("Impossible d'accéder à la caméra. Veuillez vérifier les permissions.", "error");
+        // Gestion de l'input de l'appareil photo
+        cameraInput.addEventListener('change', function() {
+            if (this.files.length) {
+                handleFile(this.files[0]);
             }
-        }
+        });
         
-        // Fonction pour prendre une photo
-        function takePhoto() {
-            const context = cameraCanvas.getContext('2d');
-            cameraCanvas.width = cameraPreview.videoWidth;
-            cameraCanvas.height = cameraPreview.videoHeight;
-            context.drawImage(cameraPreview, 0, 0, cameraCanvas.width, cameraCanvas.height);
-            
-            // Arrêter la caméra
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-            
-            // Stocker les données de l'image
-            currentImageData = cameraCanvas.toDataURL('image/jpeg');
-            
-            // Afficher la photo
-            imagePreview.src = currentImageData;
-            previewContainer.style.display = 'block';
-            retakePhoto.style.display = 'inline-block';
-            
-            // Mettre à jour le formulaire pour l'envoi
-            uploadArea.innerHTML = '';
-            uploadArea.appendChild(previewContainer);
-            
-            // Créer un input caché pour l'image
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'image';
-            hiddenInput.id = 'captured-image';
-            
-            // Convertir le canvas en blob et créer un fichier
-            cameraCanvas.toBlob(function(blob) {
-                const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
-                
-                // Créer un DataTransfer pour simuler la sélection de fichier
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                hiddenInput.files = dataTransfer.files;
-                
-                uploadForm.appendChild(hiddenInput);
-            });
-        }
-        
-        // Fonction pour basculer entre les caméras
-        async function switchCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-            
-            // Inverser la direction de la caméra
-            const currentFacingMode = cameraPreview.srcObject.getVideoTracks()[0].getSettings().facingMode;
-            const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-            
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: newFacingMode }
-                });
-                
-                cameraPreview.srcObject = stream;
-            } catch (err) {
-                console.error("Erreur lors du changement de caméra:", err);
-                showNotification("Impossible de changer de caméra.", "error");
-            }
-        }
-        
-        // Gestion de l'input de fichier
-        imageInput.addEventListener('change', function() {
+        // Gestion de l'input de vidéo
+        videoInput.addEventListener('change', function() {
             if (this.files.length) {
                 handleFile(this.files[0]);
             }
@@ -413,25 +346,49 @@
         // Fonction pour gérer les fichiers
         function handleFile(file) {
             if (file.type.startsWith('image/')) {
-                // Vérifier la taille du fichier (limite à 5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    showNotification('L\'image est trop grande. Veuillez choisir une image de moins de 5MB.', "error");
+                mediaTypeInput.value = 'image';
+                currentMediaType = 'image';
+                currentMediaFile = file;
+                
+                // Vérifier la taille du fichier (limite à 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showNotification('Le fichier est trop grand. Veuillez choisir un fichier de moins de 10MB.', "error");
                     return;
                 }
                 
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
-                    currentImageData = e.target.result;
-                    imagePreview.src = currentImageData;
+                    imagePreview.src = e.target.result;
                     previewContainer.style.display = 'block';
                     uploadArea.querySelector('.upload-content').style.display = 'none';
                     submitBtn.disabled = false;
                 };
                 
                 reader.readAsDataURL(file);
+            } else if (file.type.startsWith('video/')) {
+                mediaTypeInput.value = 'video';
+                currentMediaType = 'video';
+                currentMediaFile = file;
+                
+                // Vérifier la taille du fichier (limite à 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showNotification('Le fichier est trop grand. Veuillez choisir un fichier de moins de 10MB.', "error");
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    videoPreview.src = e.target.result;
+                    videoPreview.style.display = 'block';
+                    uploadArea.querySelector('.upload-content').style.display = 'none';
+                    submitBtn.disabled = false;
+                };
+                
+                reader.readAsDataURL(file);
             } else {
-                showNotification('Veuillez sélectionner un fichier image valide.', "error");
+                showNotification('Veuillez sélectionner un fichier image ou vidéo valide.', "error");
             }
         }
         
@@ -440,30 +397,37 @@
             resetUploadForm();
         });
         
-        // Bouton pour reprendre une photo
-        retakePhoto.addEventListener('click', function() {
-            resetUploadForm();
-            startCamera();
-        });
-        
         // Fonction pour réinitialiser le formulaire d'upload
         function resetUploadForm() {
             imageInput.value = '';
+            videoInput.value = '';
             cameraInput.value = '';
             previewContainer.style.display = 'none';
-            cameraPreview.style.display = 'none';
-            retakePhoto.style.display = 'none';
-            currentImageData = null;
+            videoPreview.style.display = 'none';
+            currentMediaFile = null;
             
             // Recréer le contenu original de l'upload-area
             uploadArea.innerHTML = `
                 <div class="upload-content">
                     <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
-                    <p>Glissez-déposez votre photo ici</p>
+                    <p>Glissez-déposez votre photo ou vidéo ici</p>
+                    <input type="file" id="image-input" name="media" accept="image/*" style="display: none;">
+                    <input type="file" id="video-input" name="media" accept="video/*" style="display: none;">
+                    <input type="file" id="camera-input" name="media" accept="image/*" capture="camera" style="display: none;">
+                    <video id="video-preview" style="display: none; width: 100%; max-height: 300px;" controls></video>
+                    <input type="hidden" id="media-type" name="media_type" value="image">
                 </div>
             `;
             
             // Réattacher les écouteurs d'événements
+            attachEventListeners();
+            
+            submitBtn.disabled = true;
+        }
+        
+        // Fonction pour attacher les écouteurs d'événements
+        function attachEventListeners() {
+            // Gestion du drag and drop
             uploadArea.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 uploadArea.classList.add('drag-over');
@@ -482,12 +446,32 @@
                 }
             });
             
-            submitBtn.disabled = true;
+            // Récupérer les nouveaux éléments
+            const newImageInput = document.getElementById('image-input');
+            const newVideoInput = document.getElementById('video-input');
+            const newCameraInput = document.getElementById('camera-input');
+            const newVideoPreview = document.getElementById('video-preview');
             
-            // Arrêter la caméra si elle est active
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
+            // Gestion de l'input d'image
+            newImageInput.addEventListener('change', function() {
+                if (this.files.length) {
+                    handleFile(this.files[0]);
+                }
+            });
+            
+            // Gestion de l'input de l'appareil photo
+            newCameraInput.addEventListener('change', function() {
+                if (this.files.length) {
+                    handleFile(this.files[0]);
+                }
+            });
+            
+            // Gestion de l'input de vidéo
+            newVideoInput.addEventListener('change', function() {
+                if (this.files.length) {
+                    handleFile(this.files[0]);
+                }
+            });
         }
         
         // Soumission du formulaire
@@ -501,26 +485,12 @@
             // Créer un FormData pour l'envoi
             const formData = new FormData(uploadForm);
             
-            // Si nous avons des données d'image (pour la caméra)
-            if (currentImageData && currentImageType === 'camera') {
-                // Convertir les données de l'image en blob
-                fetch(currentImageData)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
-                        formData.set('image', file);
-                        
-                        // Envoyer le formulaire
-                        sendFormData(formData);
-                    });
-            } else {
-                // Envoyer le formulaire directement
-                sendFormData(formData);
+            // Ajouter le fichier
+            if (currentMediaFile) {
+                formData.set('media', currentMediaFile);
             }
-        });
-        
-        // Fonction pour envoyer les données du formulaire
-        function sendFormData(formData) {
+            
+            // Envoyer le formulaire
             fetch(uploadForm.action, {
                 method: 'POST',
                 body: formData,
@@ -528,148 +498,330 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erreur lors de l\'envoi de l\'image');
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Afficher un message de succès
+                    showNotification(data.message);
+                    
+                    // Réinitialiser le formulaire
+                    resetUploadForm();
+                    
+                    // Ajouter le nouveau média à la galerie sans recharger la page
+                    if (data.media_url) {
+                        addMediaToGallery(data);
+                    }
+                } else {
+                    throw new Error(data.message || 'Erreur lors de l\'envoi du média');
                 }
-                return response.text();
-            })
-            .then(html => {
-                // Afficher un message de succès
-                showNotification('Votre photo a été partagée avec succès!');
-                
-                // Réinitialiser le formulaire
-                resetUploadForm();
-                
-                // Recharger la page après un court délai pour voir la nouvelle image
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                showNotification('Une erreur est survenue lors du téléchargement de votre photo.', "error");
+                showNotification('Une erreur est survenue lors du téléchargement de votre média.', "error");
                 
                 // Réinitialiser le bouton
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Partager';
             });
+        });
+        
+        // Fonction pour ajouter un média à la galerie sans recharger la page
+        function addMediaToGallery(data) {
+            const galleryGrid = document.getElementById('gallery-grid');
+            
+            // Créer un nouvel élément de galerie
+            const newItem = document.createElement('div');
+            newItem.className = 'gallery-item';
+            newItem.dataset.id = data.id;
+            
+            // Déterminer le contenu HTML en fonction du type de média
+            let mediaContent = '';
+            if (data.type === 'video') {
+                mediaContent = `
+                    <video class="gallery-video" poster="${data.thumbnail_url || ''}" preload="metadata">
+                        <source src="${data.media_url}" type="video/mp4">
+                        Votre navigateur ne supporte pas les vidéos HTML5.
+                    </video>
+                    <div class="video-play-btn">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                `;
+            } else {
+                mediaContent = `
+                    <img src="${data.thumbnail_url || data.media_url}" alt="Festival moment" class="gallery-img">
+                `;
+            }
+            
+            // Définir le HTML complet de l'élément
+            newItem.innerHTML = `
+                <div class="gallery-media-container">
+                    ${mediaContent}
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>${document.getElementById('author_name').value || 'Anonyme'}</h5>
+                            <p class="caption">${document.getElementById('caption').value || ''}</p>
+                            <p>${new Date().toLocaleDateString('fr-FR')} ${new Date().toLocaleTimeString('fr-FR')}</p>
+                        </div>
+                        <div class="gallery-actions">
+                            <button class="btn btn-sm btn-outline-light share-btn" 
+                                    data-media="${data.media_url}" 
+                                    data-thumbnail="${data.thumbnail_url || data.media_url}"
+                                    data-caption="${document.getElementById('caption').value || 'Découvrez ce moment incroyable du festival!'}"
+                                    data-id="${data.id}"
+                                    data-type="${data.type}">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-light download-btn" 
+                                    data-media="${data.media_url}"
+                                    data-filename="jade-birthday-${data.id}.${data.type === 'video' ? 'mp4' : 'jpg'}"
+                                    data-type="${data.type}">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Ajouter l'élément au début de la galerie
+            galleryGrid.insertBefore(newItem, galleryGrid.firstChild);
+            
+            // Attacher les écouteurs d'événements au nouvel élément
+            attachGalleryItemListeners(newItem);
+            
+            // Afficher une notification de succès
+            showNotification('Votre média a été ajouté à la galerie!');
         }
         
+        // Fonction pour attacher les écouteurs d'événements aux éléments de la galerie
+        function attachGalleryItemListeners(item) {
+            const img = item.querySelector('.gallery-img');
+            const video = item.querySelector('.gallery-video');
+            const playBtn = item.querySelector('.video-play-btn');
+            const shareBtn = item.querySelector('.share-btn');
+            const downloadBtn = item.querySelector('.download-btn');
+            
+            if (img) {
+                img.addEventListener('click', function() {
+                    const mediaUrl = this.src;
+                    const thumbnailUrl = this.src;
+                    const caption = this.parentElement.querySelector('.caption')?.textContent || '';
+                    showMediaInModal(mediaUrl, 'image', 'Moment du festival', caption, thumbnailUrl);
+                });
+            }
+            
+            if (video) {
+                video.addEventListener('click', function() {
+                    const videoSrc = this.querySelector('source').src;
+                    const thumbnailUrl = this.getAttribute('poster');
+                    const caption = this.parentElement.querySelector('.caption')?.textContent || '';
+                    showMediaInModal(videoSrc, 'video', 'Moment du festival', caption, thumbnailUrl);
+                });
+            }
+            
+            if (playBtn) {
+                playBtn.addEventListener('click', function() {
+                    const video = this.parentElement.querySelector('.gallery-video');
+                    const videoSrc = video.querySelector('source').src;
+                    const thumbnailUrl = video.getAttribute('poster');
+                    const caption = this.parentElement.querySelector('.caption')?.textContent || '';
+                    showMediaInModal(videoSrc, 'video', 'Moment du festival', caption, thumbnailUrl);
+                });
+            }
+            
+            if (shareBtn) {
+                shareBtn.addEventListener('click', function() {
+                    const mediaUrl = this.getAttribute('data-media');
+                    const thumbnailUrl = this.getAttribute('data-thumbnail');
+                    const mediaType = this.getAttribute('data-type');
+                    const defaultCaption = this.getAttribute('data-caption');
+                    
+                    openShareModal(mediaUrl, thumbnailUrl, mediaType, defaultCaption);
+                });
+            }
+            
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    const mediaUrl = this.getAttribute('data-media');
+                    const filename = this.getAttribute('data-filename');
+                    const mediaType = this.getAttribute('data-type');
+                    downloadMedia(mediaUrl, filename, mediaType);
+                });
+            }
+        }
+        
+        // Attacher les écouteurs d'événements aux éléments existants de la galerie
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            attachGalleryItemListeners(item);
+        });
+        
         // Gallery modal
-        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-        const modalImage = document.getElementById('modal-image');
+        const modal = new bootstrap.Modal(document.getElementById('mediaModal'));
+        const modalMediaContainer = document.getElementById('modal-media-container');
         const modalTitle = document.getElementById('modal-title');
         const modalCaption = document.getElementById('modal-caption');
-        const galleryImgs = document.querySelectorAll('.gallery-img');
         
-        galleryImgs.forEach(img => {
-            img.addEventListener('click', function() {
-                modalImage.src = this.src;
-                modalTitle.textContent = this.alt || 'Moment du festival';
-                modalCaption.textContent = this.parentElement.querySelector('.caption')?.textContent || '';
+        // Fonction pour afficher un média dans le modal
+        function showMediaInModal(src, type, title, caption, thumbnailUrl = null) {
+            modalMediaContainer.innerHTML = '';
+            
+            if (type === 'video') {
+                const video = document.createElement('video');
+                video.className = 'w-100';
+                video.controls = true;
+                video.autoplay = true;
                 
-                // Mettre à jour les boutons de partage
-                document.getElementById('modal-share-instagram').setAttribute('data-image', this.src);
-                document.getElementById('modal-share-facebook').setAttribute('data-image', this.src);
-                document.getElementById('modal-share-twitter').setAttribute('data-image', this.src);
-                document.getElementById('modal-share-snapchat').setAttribute('data-image', this.src);
-                document.getElementById('modal-download-image').setAttribute('data-image', this.src);
+                const source = document.createElement('source');
+                source.src = src;
+                source.type = 'video/mp4';
                 
-                modal.show();
-            });
-        });
+                video.appendChild(source);
+                modalMediaContainer.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = title || 'Moment du festival';
+                img.className = 'w-100';
+                modalMediaContainer.appendChild(img);
+            }
+            
+            modalTitle.textContent = title || 'Moment du festival';
+            modalCaption.textContent = caption || '';
+            
+            // Mettre à jour les boutons de partage
+            document.getElementById('modal-share-instagram').setAttribute('data-media', src);
+            document.getElementById('modal-share-instagram').setAttribute('data-thumbnail', thumbnailUrl || src);
+            document.getElementById('modal-share-instagram').setAttribute('data-type', type);
+            document.getElementById('modal-share-facebook').setAttribute('data-media', src);
+            document.getElementById('modal-share-facebook').setAttribute('data-thumbnail', thumbnailUrl || src);
+            document.getElementById('modal-share-facebook').setAttribute('data-type', type);
+            document.getElementById('modal-share-twitter').setAttribute('data-media', src);
+            document.getElementById('modal-share-twitter').setAttribute('data-thumbnail', thumbnailUrl || src);
+            document.getElementById('modal-share-twitter').setAttribute('data-type', type);
+            document.getElementById('modal-share-snapchat').setAttribute('data-media', src);
+            document.getElementById('modal-share-snapchat').setAttribute('data-thumbnail', thumbnailUrl || src);
+            document.getElementById('modal-share-snapchat').setAttribute('data-type', type);
+            document.getElementById('modal-download-media').setAttribute('data-media', src);
+            document.getElementById('modal-download-media').setAttribute('data-type', type);
+            
+            modal.show();
+        }
         
         // Share buttons
-        const shareBtns = document.querySelectorAll('.share-btn');
         const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
         const customCaption = document.getElementById('custom-caption');
-        const sharePreviewImage = document.getElementById('share-preview-image');
+        const sharePreviewMedia = document.getElementById('share-preview-media');
         
-        shareBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const imageUrl = this.getAttribute('data-image');
-                const defaultCaption = this.getAttribute('data-caption');
+        // Fonction pour ouvrir le modal de partage
+        function openShareModal(mediaUrl, thumbnailUrl, mediaType, defaultCaption) {
+            // Afficher l'aperçu du média
+            sharePreviewMedia.innerHTML = '';
+            
+            if (mediaType === 'video') {
+                const video = document.createElement('video');
+                video.className = 'img-fluid rounded';
+                video.controls = true;
+                video.poster = thumbnailUrl || '';
                 
-                // Afficher l'aperçu de l'image
-                sharePreviewImage.src = imageUrl;
+                const source = document.createElement('source');
+                source.src = mediaUrl;
+                source.type = 'video/mp4';
                 
-                // Pré-remplir le champ de légende
-                customCaption.value = defaultCaption;
-                
-                // Stocker l'URL de l'image pour les boutons de partage
-                document.getElementById('share-instagram').setAttribute('data-image', imageUrl);
-                document.getElementById('share-facebook').setAttribute('data-image', imageUrl);
-                document.getElementById('share-twitter').setAttribute('data-image', imageUrl);
-                document.getElementById('share-snapchat').setAttribute('data-image', imageUrl);
-                document.getElementById('share-whatsapp').setAttribute('data-image', imageUrl);
-                
-                shareModal.show();
-            });
-        });
+                video.appendChild(source);
+                sharePreviewMedia.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = thumbnailUrl || mediaUrl;
+                img.alt = 'Preview';
+                img.className = 'img-fluid rounded';
+                sharePreviewMedia.appendChild(img);
+            }
+            
+            // Pré-remplir le champ de légende
+            customCaption.value = defaultCaption;
+            
+            // Stocker l'URL du média pour les boutons de partage
+            document.getElementById('share-instagram').setAttribute('data-media', mediaUrl);
+            document.getElementById('share-instagram').setAttribute('data-thumbnail', thumbnailUrl || mediaUrl);
+            document.getElementById('share-instagram').setAttribute('data-type', mediaType);
+            document.getElementById('share-facebook').setAttribute('data-media', mediaUrl);
+            document.getElementById('share-facebook').setAttribute('data-thumbnail', thumbnailUrl || mediaUrl);
+            document.getElementById('share-facebook').setAttribute('data-type', mediaType);
+            document.getElementById('share-twitter').setAttribute('data-media', mediaUrl);
+            document.getElementById('share-twitter').setAttribute('data-thumbnail', thumbnailUrl || mediaUrl);
+            document.getElementById('share-twitter').setAttribute('data-type', mediaType);
+            document.getElementById('share-snapchat').setAttribute('data-media', mediaUrl);
+            document.getElementById('share-snapchat').setAttribute('data-thumbnail', thumbnailUrl || mediaUrl);
+            document.getElementById('share-snapchat').setAttribute('data-type', mediaType);
+            document.getElementById('share-whatsapp').setAttribute('data-media', mediaUrl);
+            document.getElementById('share-whatsapp').setAttribute('data-thumbnail', thumbnailUrl || mediaUrl);
+            document.getElementById('share-whatsapp').setAttribute('data-type', mediaType);
+            
+            shareModal.show();
+        }
         
         // Boutons de partage dans le modal
         document.getElementById('share-instagram').addEventListener('click', function() {
-            shareToSocial('instagram', this.getAttribute('data-image'), customCaption.value);
+            shareToSocial('instagram', this.getAttribute('data-media'), this.getAttribute('data-thumbnail'), this.getAttribute('data-type'), customCaption.value);
         });
         
         document.getElementById('share-facebook').addEventListener('click', function() {
-            shareToSocial('facebook', this.getAttribute('data-image'), customCaption.value);
+            shareToSocial('facebook', this.getAttribute('data-media'), this.getAttribute('data-thumbnail'), this.getAttribute('data-type'), customCaption.value);
         });
         
         document.getElementById('share-twitter').addEventListener('click', function() {
-            shareToSocial('twitter', this.getAttribute('data-image'), customCaption.value);
+            shareToSocial('twitter', this.getAttribute('data-media'), this.getAttribute('data-thumbnail'), this.getAttribute('data-type'), customCaption.value);
         });
         
         document.getElementById('share-snapchat').addEventListener('click', function() {
-            shareToSocial('snapchat', this.getAttribute('data-image'), customCaption.value);
+            shareToSocial('snapchat', this.getAttribute('data-media'), this.getAttribute('data-thumbnail'), this.getAttribute('data-type'), customCaption.value);
         });
         
         document.getElementById('share-whatsapp').addEventListener('click', function() {
-            shareToSocial('whatsapp', this.getAttribute('data-image'), customCaption.value);
+            shareToSocial('whatsapp', this.getAttribute('data-media'), this.getAttribute('data-thumbnail'), this.getAttribute('data-type'), customCaption.value);
         });
         
-        // Boutons de partage dans le modal de l'image
+        // Boutons de partage dans le modal du média
         document.getElementById('modal-share-instagram').addEventListener('click', function() {
-            const imageUrl = document.getElementById('modal-image').src;
+            const mediaUrl = this.getAttribute('data-media');
+            const thumbnailUrl = this.getAttribute('data-thumbnail');
+            const mediaType = this.getAttribute('data-type');
             const caption = document.getElementById('modal-caption').textContent;
-            shareToSocial('instagram', imageUrl, caption);
+            shareToSocial('instagram', mediaUrl, thumbnailUrl, mediaType, caption);
         });
         
         document.getElementById('modal-share-facebook').addEventListener('click', function() {
-            const imageUrl = document.getElementById('modal-image').src;
+            const mediaUrl = this.getAttribute('data-media');
+            const thumbnailUrl = this.getAttribute('data-thumbnail');
+            const mediaType = this.getAttribute('data-type');
             const caption = document.getElementById('modal-caption').textContent;
-            shareToSocial('facebook', imageUrl, caption);
+            shareToSocial('facebook', mediaUrl, thumbnailUrl, mediaType, caption);
         });
         
         document.getElementById('modal-share-twitter').addEventListener('click', function() {
-            const imageUrl = document.getElementById('modal-image').src;
+            const mediaUrl = this.getAttribute('data-media');
+            const thumbnailUrl = this.getAttribute('data-thumbnail');
+            const mediaType = this.getAttribute('data-type');
             const caption = document.getElementById('modal-caption').textContent;
-            shareToSocial('twitter', imageUrl, caption);
+            shareToSocial('twitter', mediaUrl, thumbnailUrl, mediaType, caption);
         });
         
         document.getElementById('modal-share-snapchat').addEventListener('click', function() {
-            const imageUrl = document.getElementById('modal-image').src;
+            const mediaUrl = this.getAttribute('data-media');
+            const thumbnailUrl = this.getAttribute('data-thumbnail');
+            const mediaType = this.getAttribute('data-type');
             const caption = document.getElementById('modal-caption').textContent;
-            shareToSocial('snapchat', imageUrl, caption);
+            shareToSocial('snapchat', mediaUrl, thumbnailUrl, mediaType, caption);
         });
         
-        document.getElementById('modal-download-image').addEventListener('click', function() {
-            const imageUrl = document.getElementById('modal-image').src;
-            downloadImage(imageUrl, 'jade-birthday.jpg');
-        });
-        
-        // Boutons de téléchargement
-        document.querySelectorAll('.download-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const imageUrl = this.getAttribute('data-image');
-                const filename = this.getAttribute('data-filename');
-                downloadImage(imageUrl, filename);
-            });
+        document.getElementById('modal-download-media').addEventListener('click', function() {
+            const mediaUrl = this.getAttribute('data-media');
+            const mediaType = this.getAttribute('data-type');
+            const filename = mediaType === 'video' ? 'jade-birthday-video.mp4' : 'jade-birthday-image.jpg';
+            downloadMedia(mediaUrl, filename, mediaType);
         });
         
         // Fonction pour partager sur les réseaux sociaux
-        function shareToSocial(platform, imageUrl, caption) {
+        function shareToSocial(platform, mediaUrl, thumbnailUrl, mediaType, caption) {
             const encodedUrl = encodeURIComponent(window.location.href);
             const encodedCaption = encodeURIComponent(caption + ' #JadeBirthday23 #BelliniFest');
             
@@ -677,9 +829,10 @@
             
             switch(platform) {
                 case 'instagram':
-                    // Pour Instagram, nous allons télécharger l'image et afficher des instructions
-                    downloadImage(imageUrl, 'jade-birthday-instagram.jpg');
-                    showNotification('Image téléchargée! Vous pouvez maintenant la partager sur Instagram.', 'success');
+                    // Pour Instagram, nous allons télécharger le média et afficher des instructions
+                    const filename = mediaType === 'video' ? 'jade-birthday-instagram.mp4' : 'jade-birthday-instagram.jpg';
+                    downloadMedia(mediaUrl, filename, mediaType);
+                    showNotification('Média téléchargé! Vous pouvez maintenant le partager sur Instagram.', 'success');
                     break;
                     
                 case 'facebook':
@@ -693,9 +846,10 @@
                     break;
                     
                 case 'snapchat':
-                    // Pour Snapchat, nous allons télécharger l'image et afficher des instructions
-                    downloadImage(imageUrl, 'jade-birthday-snapchat.jpg');
-                    showNotification('Image téléchargée! Vous pouvez maintenant la partager sur Snapchat.', 'success');
+                    // Pour Snapchat, nous allons télécharger le média et afficher des instructions
+                    const snapFilename = mediaType === 'video' ? 'jade-birthday-snapchat.mp4' : 'jade-birthday-snapchat.jpg';
+                    downloadMedia(mediaUrl, snapFilename, mediaType);
+                    showNotification('Média téléchargé! Vous pouvez maintenant le partager sur Snapchat.', 'success');
                     break;
                     
                 case 'whatsapp':
@@ -711,32 +865,44 @@
                 modalInstance.hide();
             }
             
-            // Fermer le modal de l'image s'il est ouvert
-            const imageModalElement = document.getElementById('imageModal');
-            if (imageModalElement.classList.contains('show')) {
-                const modalInstance = bootstrap.Modal.getInstance(imageModalElement);
+            // Fermer le modal du média s'il est ouvert
+            const mediaModalElement = document.getElementById('mediaModal');
+            if (mediaModalElement.classList.contains('show')) {
+                const modalInstance = bootstrap.Modal.getInstance(mediaModalElement);
                 modalInstance.hide();
             }
         }
         
-        // Fonction pour télécharger une image
-        function downloadImage(imageUrl, filename) {
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                })
-                .catch(error => {
-                    console.error('Erreur lors du téléchargement de l\'image:', error);
-                    showNotification('Erreur lors du téléchargement de l\'image.', 'error');
-                });
+        // Fonction pour télécharger un média
+        function downloadMedia(mediaUrl, filename, mediaType) {
+            if (mediaType === 'video') {
+                // Pour les vidéos, créer un lien de téléchargement direct
+                const a = document.createElement('a');
+                a.href = mediaUrl;
+                a.download = filename;
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                // Pour les images, utiliser fetch pour télécharger
+                fetch(mediaUrl)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors du téléchargement du média:', error);
+                        showNotification('Erreur lors du téléchargement du média.', 'error');
+                    });
+            }
         }
     });
 </script>
@@ -803,10 +969,6 @@
     gap: 10px;
 }
 
-.camera-controls {
-    margin-top: 15px;
-}
-
 .form-control {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--glass-border);
@@ -842,21 +1004,38 @@
     transform: translateY(-10px);
 }
 
-.gallery-img-container {
+.gallery-media-container {
     position: relative;
     height: 300px;
     overflow: hidden;
 }
 
-.gallery-img {
+.gallery-img, .gallery-video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.gallery-item:hover .gallery-img {
+.gallery-item:hover .gallery-img,
+.gallery-item:hover .gallery-video {
     transform: scale(1.05);
+}
+
+.video-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.video-play-btn:hover {
+    color: white;
+    transform: translate(-50%, -50%) scale(1.1);
 }
 
 .gallery-overlay {
@@ -926,12 +1105,13 @@
     gap: 10px;
 }
 
-.preview-image-container {
+.preview-media-container {
     text-align: center;
     margin-bottom: 15px;
 }
 
-.preview-image-container img {
+.preview-media-container img,
+.preview-media-container video {
     max-height: 200px;
     border-radius: 10px;
 }
