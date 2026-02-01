@@ -8,7 +8,7 @@
         <div class="col-lg-10">
             <div class="page-header text-center mb-5" data-aos="fade-up">
                 <h1 class="display-4 fw-bold mb-3 text-white">Infos Pratiques</h1>
-                <p class="lead text-white-50">Tout ce que vous devez savoir pour le Jade's Birthday 23</p>
+                <p class="lead text-white-50">Tout ce que vous devez savoir pour le Jaad's Birthday 23</p>
                 
     
             </div>
@@ -26,7 +26,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="card-body p-4 bg-dark text-white">
-                                <h3 class="card-title">Ilet Thierry</h3>
+                                <h3 class="card-title">Sur un îlet du François</h3>
                                 <p class="card-text">Un lieu paradisiaque pour une fête inoubliable !</p>
                                 <div class="location-details mt-3">
                                     <div class="detail-item">

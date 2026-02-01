@@ -13,12 +13,12 @@
                 
                 <div class="gifts-grid">
                     <!-- Bijoux Chevalière -->
-                    <div class="gift-card" data-type="chevaliere" data-amount="50" data-description="Bijoux Chevalière">
+                    <div class="gift-card" data-type="chevillere" data-amount="50" data-description="Bijoux Chevalière">
                         <div class="gift-image">
-                            <img src="{{ asset('images/wishlist/chevaliere.jpg') }}" alt="Bijoux Chevalière" class="img-fluid">
+                            <img src="{{ asset('images/wishlist/chevillere.jpg') }}" alt="Bijoux Chevalière" class="img-fluid">
                         </div>
                         <h4>Bijoux Chevalière</h4>
-                        <p>Un bijou élégant pour sublimer ma main.</p>
+                        <p>Un bijou élégant pour sublimer ma cheville.</p>
                         <div class="amount-display">
                             <span class="amount">50€</span>
                         </div>
@@ -114,7 +114,7 @@
                             <img src="{{ asset('images/wishlist/chaussures.jpg') }}" alt="Paire de chaussures" class="img-fluid">
                         </div>
                         <h4>Paire de Chaussures</h4>
-                        <p>Alhona rose fluo ou vert eau (pointure 39/40) ou carte cadeau.</p>
+                        <p>Alhona rose fluo ou verre d'eau (pointure 39/40) ou carte cadeau.</p>
                         <div class="amount-display">
                             <span class="amount">80€</span>
                         </div>
@@ -427,7 +427,7 @@
                 defaultAmount: 20,
                 amounts: [10, 20, 50, 'custom']
             },
-            chevaliere: {
+            chevillere: {
                 title: 'Offrir une bijoux chevalière',
                 showAmount: false,
                 defaultAmount: 50
@@ -703,7 +703,7 @@
         function showConfirmationModal(type, amount, name, paymentMethod) {
             const typeText = {
                 contribution: 'Contribution',
-                chevaliere: 'Bijoux Chevalière',
+                chevillere: 'Bijoux Chevalière',
                 'bague-pied': 'Bague de Pied',
                 'boucle-oreille': 'Boucle d\'Oreille',
                 'rouge-levre': 'Rouge à Lèvre Matte',
