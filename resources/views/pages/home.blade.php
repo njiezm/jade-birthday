@@ -23,13 +23,16 @@
 
 @section('header')
 <header class="festival-header">
+     <br>
+        <br>
+        <br>
+        <br>
     <div class="header-img-container">
         <div class="header-overlay"></div>
-        <!-- Logo ajouté dans l'en-tête -->
         <div class="logo-container">
             <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid logo-header">
         </div>
-    </div>
+    <div>
     
     <div class="header-content container text-center margin-bottom-50">
         <br>
