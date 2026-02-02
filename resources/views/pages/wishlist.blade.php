@@ -12,12 +12,12 @@
                 </div>
                 
                 <div class="gifts-grid">
-                    <!-- Bijoux Chevalière -->
-                    <div class="gift-card" data-type="chevillere" data-amount="50" data-description="Bijoux Chevalière">
+                    <!-- Bijoux chevillère -->
+                    <div class="gift-card" data-type="chevillere" data-amount="50" data-description="Bijoux chevillère">
                         <div class="gift-image">
-                            <img src="{{ asset('images/wishlist/chevillere.jpg') }}" alt="Bijoux Chevalière" class="img-fluid">
+                            <img src="{{ asset('images/wishlist/chevillere.jpg') }}" alt="Bijoux chevillère" class="img-fluid">
                         </div>
-                        <h4>Bijoux Chevalière</h4>
+                        <h4>Bijoux chevillère</h4>
                         <p>Un bijou élégant pour sublimer ma cheville.</p>
                         <div class="amount-display">
                             <span class="amount">50€</span>
@@ -428,7 +428,7 @@
                 amounts: [10, 20, 50, 'custom']
             },
             chevillere: {
-                title: 'Offrir une bijoux chevalière',
+                title: 'Offrir une bijoux chevillère',
                 showAmount: false,
                 defaultAmount: 50
             },
@@ -703,7 +703,7 @@
         function showConfirmationModal(type, amount, name, paymentMethod) {
             const typeText = {
                 contribution: 'Contribution',
-                chevillere: 'Bijoux Chevalière',
+                chevillere: 'Bijoux chevillère',
                 'bague-pied': 'Bague de Pied',
                 'boucle-oreille': 'Boucle d\'Oreille',
                 'rouge-levre': 'Rouge à Lèvre Matte',
