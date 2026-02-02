@@ -9,7 +9,7 @@
             <div class="page-header text-center mb-5" data-aos="fade-up">
                 <h1 class="display-4 fw-bold mb-3 text-white">Infos Pratiques</h1>
                 <p class="lead text-white-50">Tout ce que vous devez savoir pour le Jaad's Birthday 23</p>
-                
+            
     
             </div>
             
@@ -43,7 +43,20 @@
                     </div>
                 </div>
             </div>
-            
+            <!-- Info bouteille obligatoire -->
+<div class="bottle-info-wrapper mt-4 mb-4" data-aos="zoom-in">
+    <div class="bottle-info" id="bottleInfo">
+        <span class="bottle-text">
+            1 pers = 1 bouteille de Martini Bellini
+            <sup class="bottle-asterisk">*</sup>
+        </span>
+
+        <div class="bottle-tooltip" id="bottleTooltip">
+            Chaque invité doit ramener <strong>au minimum une bouteille</strong> de Martini Bellini afin d’assurer les consommations pour tous durant l’événement 🍾
+        </div>
+    </div>
+</div>
+
             <!-- Horaires -->
             <div class="info-section mb-5" data-aos="fade-up" data-aos-delay="200">
                 <h2 class="section-title mb-4"><i class="fas fa-clock me-2"></i> Horaires</h2>
@@ -510,5 +523,92 @@
         width: 100%;
     }
 }
+
+/* Info bouteille */
+.bottle-info-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.bottle-info {
+    position: relative;
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 12px 20px;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+}
+
+.bottle-info:hover {
+    transform: scale(1.03);
+}
+
+.bottle-text {
+    color: #FF6A88;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.bottle-asterisk {
+    font-size: 1rem;
+    margin-left: 4px;
+}
+
+/* Tooltip */
+.bottle-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.9);
+    color: #fff;
+    padding: 12px 15px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    width: 260px;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+/* Petite flèche */
+.bottle-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.9) transparent transparent transparent;
+}
+
+/* Tooltip visible */
+.bottle-info.active .bottle-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
 </style>
 @endpush
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const bottleInfo = document.getElementById('bottleInfo');
+
+    bottleInfo.addEventListener('click', function () {
+        bottleInfo.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!bottleInfo.contains(e.target)) {
+            bottleInfo.classList.remove('active');
+        }
+    });
+});
+</script>
